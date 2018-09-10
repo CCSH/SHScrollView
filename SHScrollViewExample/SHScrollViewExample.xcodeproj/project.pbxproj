@@ -233,8 +233,8 @@
 		5C3AA68C21428CCE003B0744 /* SHScrollView */ = {
 			isa = PBXGroup;
 			children = (
-				5C3AA68D21428CCE003B0744 /* SHScrollView.m */,
 				5C3AA68E21428CCE003B0744 /* SHScrollView.h */,
+				5C3AA68D21428CCE003B0744 /* SHScrollView.m */,
 			);
 			path = SHScrollView;
 			sourceTree = "<group>";
@@ -558,6 +558,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = YHGV678NGG;
 				INFOPLIST_FILE = SHScrollViewExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -574,6 +575,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = YHGV678NGG;
 				INFOPLIST_FILE = SHScrollViewExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

@@ -20,13 +20,13 @@
 //默认图片
 @property (nonatomic, copy) UIImage *placeholderImage;
 //时间间隔(不设置则不进行轮播)
-@property (nonatomic, assign) NSInteger timeInterval;
+@property (nonatomic, assign) CGFloat timeInterval;
 
 //开始
 @property (nonatomic, copy) void (^startRollingBlock)(void);
 //滚动中
 @property (nonatomic, copy) void (^rollingBlock)(CGFloat offset);
-//结束
+//滚动了一页
 @property (nonatomic, copy) void (^endRollingBlock)(BOOL isClick,NSInteger currentIndex);
 
 //刷新界面
