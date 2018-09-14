@@ -13,7 +13,8 @@
 
 @property (nonatomic, weak) NSTimer *timer;
 
-@property (nonatomic, assign) NSInteger currentIndex;
+//内容视图
+@property (nonatomic, weak) UICollectionView *mainView;
 
 @end
 
@@ -64,9 +65,6 @@ static NSString *cellId = @"SHScrollView";
 - (void)reloadView{
     
     self.currentIndex = 0;
-    [self.mainView reloadData];
-    [self.mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
-    [self timeStart];
 }
 
 #pragma mark 时间开始
@@ -200,7 +198,7 @@ static NSString *cellId = @"SHScrollView";
     [collectionView deselectItemAtIndexPath:indexPath animated:NO];
     
     if (self.endRollingBlock) {
-        self.endRollingBlock(YES, indexPath.row);
+        self.endRollingBlock(YES, self.currentIndex);
     }
 }
 
@@ -234,8 +232,7 @@ static NSString *cellId = @"SHScrollView";
                 if (self.currentIndex < 0) {//第一页
                     self.currentIndex = self.contentArr.count - 1;
                 }
-                [self.mainView reloadData];
-                [self.mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
+                
             }
                 break;
             case 1:
@@ -249,16 +246,10 @@ static NSString *cellId = @"SHScrollView";
                 if (self.currentIndex > self.contentArr.count - 1) {//最后一页
                     self.currentIndex = 0;
                 }
-                [self.mainView reloadData];
-                [self.mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
             }
                 break;
             default:
                 break;
-        }
-        //滚动了一页
-        if (self.endRollingBlock) {
-            self.endRollingBlock(NO, self.currentIndex);
         }
     }
     
@@ -266,6 +257,19 @@ static NSString *cellId = @"SHScrollView";
     if (self.rollingBlock) {
         self.rollingBlock(scrollView.contentOffset.x);
     }
+}
+
+- (void)setCurrentIndex:(NSInteger)currentIndex{
+    _currentIndex = currentIndex;
+    
+    [self.mainView reloadData];
+    [self.mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
+    
+    //滚动了一页
+    if (self.endRollingBlock) {
+        self.endRollingBlock(NO, currentIndex);
+    }
+    
 }
 
 @end

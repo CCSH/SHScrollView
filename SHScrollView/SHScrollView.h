@@ -10,8 +10,7 @@
 
 @interface SHScrollView : UIView
 
-//内容视图
-@property (nonatomic, weak) UICollectionView *mainView;
+
 
 //每张图片对应要显示的文字数组
 @property (nonatomic, strong) NSArray *titleArr;
@@ -21,6 +20,8 @@
 @property (nonatomic, copy) UIImage *placeholderImage;
 //时间间隔(不设置则不进行轮播)
 @property (nonatomic, assign) CGFloat timeInterval;
+//设置位置
+@property (nonatomic, assign) NSInteger currentIndex;
 
 //开始
 @property (nonatomic, copy) void (^startRollingBlock)(void);
