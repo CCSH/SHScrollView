@@ -10,18 +10,20 @@
 
 @interface SHScrollView : UIView
 
-
-
 //每张图片对应要显示的文字数组
 @property (nonatomic, strong) NSArray *titleArr;
 //内容Arr (http、path、view、image、vc)
 @property (nonatomic, copy) NSArray *contentArr;
 //默认图片
 @property (nonatomic, copy) UIImage *placeholderImage;
-//时间间隔(不设置则不进行轮播)
-@property (nonatomic, assign) CGFloat timeInterval;
-//设置位置
+//显示位置
 @property (nonatomic, assign) NSInteger currentIndex;
+
+//自动轮播时间间隔 (默认是0）
+// < 0 不自动 不界面循环
+// = 0 不自动 界面循环
+// > 0 自动 界面循环
+@property (nonatomic, assign) CGFloat timeInterval;
 
 //开始
 @property (nonatomic, copy) void (^startRollingBlock)(void);
