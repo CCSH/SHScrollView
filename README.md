@@ -1,5 +1,5 @@
 # SHScrollView
-轮播图
+三个视图无限轮播
 # 使用 pod 导入
 ```
 pod 'SHScrollView'
