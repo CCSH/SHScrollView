@@ -60,36 +60,6 @@ static NSString *cellId = @"SHScrollView";
     return _mainView;
 }
 
-#pragma mark 时间开始
-- (void)timeStart{
-    
-    if (self.timeInterval > 0) {//存在间隔时间
-        
-        if (self.timer) {
-            [self.timer invalidate];
-            self.timer = nil;
-        }
-        
-        NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:self.timeInterval target:self selector:@selector(nextPage) userInfo:nil repeats:YES];
-        [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
-        self.timer = timer;
-    }
-}
-
-#pragma mark 时间停止
-- (void)timeStop{
-    if (self.timer) {
-        [self.timer invalidate];
-        self.timer = nil;
-    }
-}
-
-#pragma mark 下一页
-- (void)nextPage{
-
-    [self.mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:2 inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
-}
-
 #pragma mark - UICollectionViewDelegate
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     
@@ -113,6 +83,7 @@ static NSString *cellId = @"SHScrollView";
         obj = self.contentArr[indexPath.row];
         
     }else{//界面循环
+        
         switch (indexPath.row) {
             case 0://左边
             {
@@ -228,41 +199,37 @@ static NSString *cellId = @"SHScrollView";
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
     
-    [self timeStart];
+    [self dealTime];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     
     CGFloat index = scrollView.contentOffset.x/scrollView.frame.size.width;
-    NSInteger current = (NSInteger)index;
     
-    if (current == index) {//滑动了一页
-
+    if (index == (NSInteger)index) {//滑动了一页
+        
         if (self.timeInterval < 0) {//界面不循环
             
-            self.currentIndex = current;
-
+            self.currentIndex = (NSInteger)index;
+            
         }else{//界面循环
             
-            switch (current) {
-                case 0:
+            switch ((NSInteger)index) {
+                case 0://左
                 {
-                    self.currentIndex -= 1;
-                    if (self.currentIndex < 0) {//第一页
+                    if (self.currentIndex <= 0) {//第一页
                         self.currentIndex = self.contentArr.count - 1;
+                    }else{
+                       self.currentIndex -= 1;
                     }
                 }
                     break;
-                case 1:
+                case 2://右
                 {
-                    
-                }
-                    break;
-                case 2:
-                {
-                    self.currentIndex += 1;
-                    if (self.currentIndex > self.contentArr.count - 1) {//最后一页
+                    if (self.currentIndex >= self.contentArr.count - 1) {//最后一页
                         self.currentIndex = 0;
+                    }else{
+                        self.currentIndex += 1;
                     }
                 }
                     break;
@@ -271,10 +238,13 @@ static NSString *cellId = @"SHScrollView";
             }
         }
         
+        index = self.currentIndex;
+        
     }else{//滑动中
 
         if (self.timeInterval >= 0) {//界面循环
-            if (current == 0) {//右滑
+            
+            if ((NSInteger)index == 0) {//右滑
 
                 if (self.currentIndex == 0) {//第一个
 
@@ -283,28 +253,37 @@ static NSString *cellId = @"SHScrollView";
                     index = self.currentIndex - 1 + index;
                 }
 
-            }else if (current == 1){//左滑
+            }else if ((NSInteger)index == 1){//左滑
 
                 index = self.currentIndex - 1 + index;
             }
         }
-        
-        //滚动中
-        if (self.rollingBlock) {
-            self.rollingBlock(index);
-        }
+    }
+    
+    //滚动中
+    if (self.rollingBlock) {
+        self.rollingBlock(index);
     }
 }
 
 #pragma mark - SET
 - (void)setCurrentIndex:(NSInteger)currentIndex{
-    _currentIndex = currentIndex;
+
+    //超过数组限制
+    if (currentIndex >= self.contentArr.count) {
+        return;
+    }
     
+     _currentIndex = currentIndex;
+    
+    //刷新内容
     [self.mainView reloadData];
     
-    if (self.timeInterval < 0) {//界面不循环
+    if (self.timeInterval < 0) {
+        //界面不循环
         [self.mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:currentIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
     }else{
+        //界面循环
         [self.mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
     }
     
@@ -312,21 +291,62 @@ static NSString *cellId = @"SHScrollView";
     if (self.endRollingBlock) {
         self.endRollingBlock(NO, currentIndex);
     }
+}
+
+- (void)setContentArr:(NSArray *)contentArr{
+    _contentArr = contentArr;
     
-    //滚动中
-    if (self.rollingBlock) {
-        self.rollingBlock(self.currentIndex);
+    //数组为空
+    if (!contentArr.count) {
+        return;
+    }
+    
+    if (!self.currentIndex || self.currentIndex >= contentArr.count) {
+        self.currentIndex = 0;
     }
 }
 
-#pragma mark - 刷新界面
-- (void)reloadView{
+- (void)setTimeInterval:(CGFloat)timeInterval{
+    _timeInterval = timeInterval;
     
-    [self timeStart];
+    [self dealTime];
+}
+
+#pragma mark - 时间操作
+#pragma mark 时间处理
+- (void)dealTime{
     
-    if (!self.currentIndex) {
-        self.currentIndex = 0;
+    if (self.timeInterval > 0) {//存在间隔时间
+        //先处理之前的时间
+        [self timeStop];
+        
+        //创建新的时间
+        NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:self.timeInterval target:self selector:@selector(nextPage) userInfo:nil repeats:YES];
+        [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
+        self.timer = timer;
+    }else{
+        //停止
+        [self timeStop];
     }
+}
+
+#pragma mark 时间停止
+- (void)timeStop{
+    
+    if (self.timer) {
+        [self.timer invalidate];
+        self.timer = nil;
+    }
+}
+
+#pragma mark 下一页
+- (void)nextPage{
+    
+    if (!self.contentArr.count) {
+        return;
+    }
+    
+    [self.mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:2 inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
 }
 
 @end

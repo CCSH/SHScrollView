@@ -39,8 +39,7 @@
     
     SHScrollView *view = [[SHScrollView alloc]init];
     view.frame = CGRectMake(0, 100, self.view.frame.size.width, 200);
-    view.contentArr = imageArr;
-    view.timeInterval = 0;
+
     [self.view addSubview:view];
     [self.view sendSubviewToBack:view];
     
@@ -48,20 +47,17 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             self.lab.text = [NSString stringWithFormat:@"- %ld -",(long)currentIndex];
         });
-        
     };
     
     view.rollingBlock = ^(CGFloat offset) {
 
         NSLog(@"------%f",offset);
-        
     };
     
-//    view.currentIndex = 1;
-    //刷新
-    [view reloadView];
+    //设置数据源
+    view.contentArr = imageArr;
+    view.timeInterval = 3;
 }
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
