@@ -172,10 +172,9 @@ static NSString *cellId = @"SHScrollView";
         
     } else if ([obj isKindOfClass:[UIViewController class]]) {//控制器
         
-        UIViewController *vc = (UIViewController *)[self sh_copyWithObj:obj];
+        UIViewController *vc = (UIViewController *)obj;
         vc.view.frame = cell.contentView.bounds;
         [cell.contentView addSubview:vc.view];
-        
     }else if ([obj isKindOfClass:[UIView class]]){//视图
         
         UIView *view = (UIView *)[self sh_copyWithObj:obj];
@@ -229,7 +228,7 @@ static NSString *cellId = @"SHScrollView";
                     if (self.currentIndex <= 0) {//第一页
                         self.currentIndex = self.contentArr.count - 1;
                     }else{
-                       self.currentIndex -= 1;
+                        self.currentIndex -= 1;
                     }
                 }
                     break;
@@ -250,20 +249,20 @@ static NSString *cellId = @"SHScrollView";
         index = self.currentIndex;
         
     }else{//滑动中
-
+        
         if (self.timeInterval >= 0) {//界面循环
             
             if ((NSInteger)index == 0) {//右滑
-
+                
                 if (self.currentIndex == 0) {//第一个
-
+                    
                     index = self.contentArr.count - 1 + index;
                 }else{
                     index = self.currentIndex - 1 + index;
                 }
-
+                
             }else if ((NSInteger)index == 1){//左滑
-
+                
                 index = self.currentIndex - 1 + index;
             }
         }
@@ -277,13 +276,13 @@ static NSString *cellId = @"SHScrollView";
 
 #pragma mark - SET
 - (void)setCurrentIndex:(NSInteger)currentIndex{
-
-    //超过数组限制
+    
+    //超过数组限制，不进行处理
     if (currentIndex >= self.contentArr.count) {
         return;
     }
     
-     _currentIndex = currentIndex;
+    _currentIndex = currentIndex;
     
     //刷新内容
     [self.mainView reloadData];
@@ -310,10 +309,11 @@ static NSString *cellId = @"SHScrollView";
         return;
     }
     
+    //超出数组则重置
     if (!self.currentIndex || self.currentIndex >= contentArr.count) {
         self.currentIndex = 0;
     }
-    
+    //处理时间
     [self dealTime];
 }
 
@@ -353,10 +353,12 @@ static NSString *cellId = @"SHScrollView";
 #pragma mark 下一页
 - (void)nextPage{
     
+    //数组为空
     if (!self.contentArr.count) {
         return;
     }
     
+    //滚动到下一页
     [self.mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:2 inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
 }
 
