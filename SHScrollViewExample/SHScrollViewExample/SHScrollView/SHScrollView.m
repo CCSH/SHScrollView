@@ -60,6 +60,13 @@ static NSString *cellId = @"SHScrollView";
     return _mainView;
 }
 
+#pragma mark - 复制
+- (id)sh_copyWithObj:(id)obj{
+    
+    NSData *tempArchive = [NSKeyedArchiver archivedDataWithRootObject:obj];
+    return [NSKeyedUnarchiver unarchiveObjectWithData:tempArchive];
+}
+
 #pragma mark - UICollectionViewDelegate
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     
@@ -114,6 +121,7 @@ static NSString *cellId = @"SHScrollView";
         }
     }
     
+    NSLog(@" %ld ---- %@",(long)indexPath.row,obj);
     //配置数据源
     [self configCell:cell obj:obj];
     
@@ -164,13 +172,14 @@ static NSString *cellId = @"SHScrollView";
         
     } else if ([obj isKindOfClass:[UIViewController class]]) {//控制器
         
-        UIViewController *vc = (UIViewController *)obj;
+        UIViewController *vc = (UIViewController *)[self sh_copyWithObj:obj];
         vc.view.frame = cell.contentView.bounds;
         [cell.contentView addSubview:vc.view];
         
     }else if ([obj isKindOfClass:[UIView class]]){//视图
         
-        [cell.contentView addSubview:obj];
+        UIView *view = (UIView *)[self sh_copyWithObj:obj];
+        [cell.contentView addSubview:view];
     }else{//展示默认图片
         
         imageView.image = self.placeholderImage;
@@ -304,6 +313,8 @@ static NSString *cellId = @"SHScrollView";
     if (!self.currentIndex || self.currentIndex >= contentArr.count) {
         self.currentIndex = 0;
     }
+    
+    [self dealTime];
 }
 
 - (void)setTimeInterval:(CGFloat)timeInterval{
