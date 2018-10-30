@@ -10,9 +10,9 @@
 
 @interface SHScrollView : UIView
 
-//内容Arr (http、path、view、image、vc) 设置完内容就直接刷新了
+//内容Arr (http、path、view、image、vc)
 @property (nonatomic, copy) NSArray *contentArr;
-//显示位置(需要先设置内容在设置此属性)
+//显示位置(设置在 contentArr 之后)
 @property (nonatomic, assign) NSInteger currentIndex;
 //默认图片
 @property (nonatomic, copy) UIImage *placeholderImage;
@@ -29,6 +29,9 @@
 @property (nonatomic, copy) void (^rollingBlock)(CGFloat offset);
 //滚动了一页
 @property (nonatomic, copy) void (^endRollingBlock)(BOOL isClick,NSInteger currentIndex);
+
+//刷新视图
+- (void)reloadView;
 
 
 @end

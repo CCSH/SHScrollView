@@ -301,28 +301,6 @@ static NSString *cellId = @"SHScrollView";
     }
 }
 
-- (void)setContentArr:(NSArray *)contentArr{
-    _contentArr = contentArr;
-    
-    //数组为空
-    if (!contentArr.count) {
-        return;
-    }
-    
-    //超出数组则重置
-    if (!self.currentIndex || self.currentIndex >= contentArr.count) {
-        self.currentIndex = 0;
-    }
-    //处理时间
-    [self dealTime];
-}
-
-- (void)setTimeInterval:(CGFloat)timeInterval{
-    _timeInterval = timeInterval;
-    
-    [self dealTime];
-}
-
 #pragma mark - 时间操作
 #pragma mark 时间处理
 - (void)dealTime{
@@ -360,6 +338,23 @@ static NSString *cellId = @"SHScrollView";
     
     //滚动到下一页
     [self.mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:2 inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
+}
+
+#pragma mark - 刷新视图
+- (void)reloadView{
+    
+    //数组为空
+    if (!self.contentArr.count) {
+        return;
+    }
+    
+    //超出数组则重置
+    if (!self.currentIndex || self.currentIndex >= self.contentArr.count) {
+        self.currentIndex = 0;
+    }
+    
+    //处理时间
+    [self dealTime];
 }
 
 @end

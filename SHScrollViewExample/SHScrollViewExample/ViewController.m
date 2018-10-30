@@ -63,7 +63,9 @@
     
     //设置数据源
     view.contentArr = imageArr;
-    view.timeInterval = 3;
+    view.timeInterval = -1;
+    view.currentIndex = 2;
+    [view reloadView];
 }
 
 - (void)didReceiveMemoryWarning {
