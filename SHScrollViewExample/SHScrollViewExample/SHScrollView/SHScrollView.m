@@ -121,7 +121,6 @@ static NSString *cellId = @"SHScrollView";
         }
     }
     
-    NSLog(@" %ld ---- %@",(long)indexPath.row,obj);
     //配置数据源
     [self configCell:cell obj:obj];
     
