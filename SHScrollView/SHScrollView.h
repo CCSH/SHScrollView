@@ -23,6 +23,9 @@
 // > 0 自动 界面循环
 @property (nonatomic, assign) CGFloat timeInterval;
 
+//是否是水平方向(默认 YES)
+@property (nonatomic, assign) BOOL isHorizontal;
+
 //开始
 @property (nonatomic, copy) void (^startRollingBlock)(void);
 //滚动中

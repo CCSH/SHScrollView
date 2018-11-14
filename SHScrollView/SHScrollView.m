@@ -21,14 +21,23 @@
 
 static NSString *cellId = @"SHScrollView";
 
+#pragma mark - 初始化
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        self.isHorizontal = YES;
+    }
+    return self;
+}
 #pragma mark - 懒加载
 - (UICollectionView *)mainView{
+    
     if (!_mainView) {
-        
         //UICollectionView的自动布局
         UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc]init];
         //设置滑动方向
-        layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+        layout.scrollDirection = self.isHorizontal;
         //设置水平间距（内部）
         layout.minimumInteritemSpacing = 0;
         //设置竖直间距（内部）
@@ -36,7 +45,7 @@ static NSString *cellId = @"SHScrollView";
         //设置外框间距 (外部)
         layout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
         //设置内容大小
-        layout.itemSize = CGSizeMake(self.frame.size.width, self.frame.size.height);
+        layout.itemSize = self.frame.size;
         
         //内容
         UICollectionView *mainView = [[UICollectionView alloc] initWithFrame:self.bounds collectionViewLayout:layout];
@@ -135,7 +144,7 @@ static NSString *cellId = @"SHScrollView";
     
     //设置默认视图
     UIImageView *imageView = [[UIImageView alloc]init];
-    imageView.frame = cell.contentView.bounds;
+    imageView.frame = self.bounds;
     
     if ([obj isKindOfClass:[NSString class]]) {//字符串
         
@@ -172,7 +181,7 @@ static NSString *cellId = @"SHScrollView";
     } else if ([obj isKindOfClass:[UIViewController class]]) {//控制器
         
         UIViewController *vc = (UIViewController *)obj;
-        vc.view.frame = cell.contentView.bounds;
+        vc.view.frame = imageView.bounds;
         [cell.contentView addSubview:vc.view];
     }else if ([obj isKindOfClass:[UIView class]]){//视图
         
@@ -211,7 +220,12 @@ static NSString *cellId = @"SHScrollView";
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     
-    CGFloat index = scrollView.contentOffset.x/scrollView.frame.size.width;
+    CGFloat index;
+    if (self.isHorizontal) {
+        index = scrollView.contentOffset.x/(scrollView.frame.size.width);
+    }else{
+        index = scrollView.contentOffset.y/(scrollView.frame.size.height);
+    }
     
     if (index == (NSInteger)index) {//滑动了一页
         

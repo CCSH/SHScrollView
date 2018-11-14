@@ -20,9 +20,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-//    self.lab.layer.cornerRadius = 10;
-//    self.lab.layer.masksToBounds = YES;
-    
     UILabel *lab = [[UILabel alloc]init];
     lab.frame = CGRectMake(0, 0, self.view.frame.size.width, 200);
     lab.backgroundColor = [UIColor orangeColor];
@@ -30,11 +27,10 @@
     lab.textAlignment = NSTextAlignmentCenter;
     
     UILabel *lab2 = [[UILabel alloc]init];
-    lab2.frame = CGRectMake(0, 0, self.view.frame.size.width, 200);
+    lab2.frame = CGRectMake(20, 10, self.view.frame.size.width - 2*20, 150);
     lab2.backgroundColor = [UIColor redColor];
     lab2.text = @"我是lab2";
     lab2.textAlignment = NSTextAlignmentCenter;
-    
     
     NSArray *imageArr = @[@"http://txt25-2.book118.com/2017/0420/book99787/99786555.jpg",
                           lab,
@@ -63,8 +59,9 @@
     
     //设置数据源
     view.contentArr = imageArr;
-    view.timeInterval = -1;
-    view.currentIndex = 2;
+    
+    view.isHorizontal = NO;
+    view.timeInterval = 2;
     [view reloadView];
 }
 
