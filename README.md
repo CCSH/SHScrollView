@@ -1,4 +1,7 @@
 # SHScrollView
+
+> 使用中如果有其他问题可以[`告诉我`](https://github.com/CCSH/SHScrollView/issues/new)
+
 基于UICollectionView三个视图，实现无限轮播
 # 使用 pod 导入
 ```
