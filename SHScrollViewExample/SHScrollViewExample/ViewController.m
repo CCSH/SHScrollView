@@ -62,9 +62,8 @@
     view.contentArr = imageArr;
     
 //    view.isHorizontal = NO;
-    view.timeInterval = -1;
+    view.timeInterval = 0;
     view.isZoom = YES;
-    view.itemSize = CGSizeMake(250, 200);
     [view reloadView];
 }
 

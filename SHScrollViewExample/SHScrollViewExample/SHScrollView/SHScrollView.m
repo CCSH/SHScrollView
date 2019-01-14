@@ -144,7 +144,7 @@ static NSString *cellId = @"SHScrollView";
     
     //添加视图
     UIScrollView *scrollView = [[UIScrollView alloc]init];
-    scrollView.frame = CGRectMake(0, 0, self.itemSize.width, self.itemSize.height);
+    scrollView.frame = self.bounds;
     scrollView.delegate = self;
     scrollView.tag = 10;
     scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
