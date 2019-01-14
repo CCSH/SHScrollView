@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "SHScrollView"
-    s.version      = "2.0.2"
+    s.version      = "2.1.0"
     s.summary      = "视图轮播，定时滚动"
     s.license      = "MIT"
     s.authors      = { "CSH" => "624089195@qq.com" }

@@ -25,6 +25,8 @@
 
 //是否是水平方向(默认 YES)
 @property (nonatomic, assign) BOOL isHorizontal;
+//是否可以缩放
+@property (nonatomic, assign) BOOL isZoom;
 
 //开始
 @property (nonatomic, copy) void (^startRollingBlock)(void);
