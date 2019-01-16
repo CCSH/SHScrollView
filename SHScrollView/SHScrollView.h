@@ -38,5 +38,4 @@
 //刷新视图
 - (void)reloadView;
 
-
 @end

@@ -11,6 +11,7 @@
 
 @interface SHScrollView ()<UICollectionViewDataSource, UICollectionViewDelegate>
 
+//定时器
 @property (nonatomic, weak) NSTimer *timer;
 //内容视图
 @property (nonatomic, weak) UICollectionView *mainView;
@@ -30,6 +31,7 @@ static NSString *cellId = @"SHScrollView";
     }
     return self;
 }
+
 #pragma mark - 懒加载
 - (UICollectionView *)mainView{
     
@@ -69,11 +71,19 @@ static NSString *cellId = @"SHScrollView";
     return _mainView;
 }
 
-#pragma mark - 复制
+#pragma mark - 复制试图
 - (id)sh_copyWithObj:(id)obj{
     
     NSData *tempArchive = [NSKeyedArchiver archivedDataWithRootObject:obj];
     return [NSKeyedUnarchiver unarchiveObjectWithData:tempArchive];
+}
+
+#pragma mark - 点击视图
+- (void)tapAction{
+    
+    if (self.endRollingBlock) {
+        self.endRollingBlock(YES, self.currentIndex);
+    }
 }
 
 #pragma mark - UICollectionViewDelegate
@@ -84,7 +94,11 @@ static NSString *cellId = @"SHScrollView";
 
 - (NSInteger )collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     
-    return (self.timeInterval < 0)?self.contentArr.count:3;
+    if (self.timeInterval < 0) {//不循环
+        return self.contentArr.count;
+    }else{
+        return 3;
+    }
 }
 
 #pragma mark 实例化UICollectionView
@@ -146,18 +160,21 @@ static NSString *cellId = @"SHScrollView";
     UIScrollView *scrollView = [[UIScrollView alloc]init];
     scrollView.frame = self.bounds;
     scrollView.delegate = self;
-    scrollView.tag = 10;
     scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     scrollView.minimumZoomScale = 1;
     scrollView.maximumZoomScale = 10;
     scrollView.showsVerticalScrollIndicator = NO;
     scrollView.showsHorizontalScrollIndicator = NO;
-
-    //设置默认视图
-    UIImageView *imageView = [[UIImageView alloc]init];
-    imageView.frame = scrollView.bounds;
+    
+    //添加点击
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapAction)];
+    [scrollView addGestureRecognizer:tap];
     
     if ([obj isKindOfClass:[NSString class]]) {//字符串
+        
+        //设置默认视图
+        UIImageView *imageView = [[UIImageView alloc]init];
+        imageView.frame = scrollView.bounds;
         
         NSString *str = (NSString *)obj;
         
@@ -184,6 +201,10 @@ static NSString *cellId = @"SHScrollView";
         
     } else if ([obj isKindOfClass:[UIImage class]]) {//图片
         
+        //设置默认视图
+        UIImageView *imageView = [[UIImageView alloc]init];
+        imageView.frame = scrollView.bounds;
+        
         UIImage *image = (UIImage *)obj;
         imageView.image = image;
         
@@ -204,24 +225,19 @@ static NSString *cellId = @"SHScrollView";
         
     }else{//展示默认图片
         
+        //设置默认视图
+        UIImageView *imageView = [[UIImageView alloc]init];
+        imageView.frame = scrollView.bounds;
         imageView.image = self.placeholderImage;
         
         [scrollView addSubview:imageView];
     }
     
+    //添加到视图
     [cell.contentView addSubview:scrollView];
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    
-    [collectionView deselectItemAtIndexPath:indexPath animated:NO];
-    
-    if (self.endRollingBlock) {
-        self.endRollingBlock(YES, self.currentIndex);
-    }
-}
-
-#pragma mark UIScrollViewDelegate
+#pragma mark - UIScrollViewDelegate
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
     
     if ([scrollView isEqual:self.mainView]) {
@@ -313,28 +329,31 @@ static NSString *cellId = @"SHScrollView";
     }
 }
 
+#pragma mark 缩放
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView{
     
-    UICollectionViewCell *cell = [self.mainView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:((self.timeInterval < 0) ? self.currentIndex : 1) inSection:0]];
-    UIScrollView *scroll = [cell.contentView viewWithTag:10];
-    
-    if ([scroll isEqual:scrollView]) {
+    if (self.isZoom) {
         
-        if (self.isZoom) {
+        UICollectionViewCell *cell = [self.mainView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:((self.timeInterval < 0) ? self.currentIndex : 1) inSection:0]];
+        UIScrollView *scroll = [cell.contentView.subviews lastObject];
+        
+        if ([scroll isEqual:scrollView]) {
             return [scroll.subviews firstObject];
         }
     }
-    
     return nil;
 }
 
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale{
     
-    UICollectionViewCell *cell = [self.mainView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:self.currentIndex inSection:0]];
-    UIScrollView *scroll = [cell.contentView viewWithTag:10];
-    
-    if ([scroll isEqual:scrollView]) {
-        [scrollView setZoomScale:scale animated:NO];
+    if (self.isZoom) {
+        
+        UICollectionViewCell *cell = [self.mainView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:self.currentIndex inSection:0]];
+        UIScrollView *scroll = [cell.contentView viewWithTag:10];
+        
+        if ([scroll isEqual:scrollView]) {
+            [scrollView setZoomScale:scale animated:NO];
+        }
     }
 }
 
