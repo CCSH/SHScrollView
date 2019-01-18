@@ -27,13 +27,13 @@
     lab.textAlignment = NSTextAlignmentCenter;
     
     UILabel *lab2 = [[UILabel alloc]init];
-    lab2.frame = CGRectMake(20, 10, self.view.frame.size.width - 2*20, 150);
+    lab2.frame = CGRectMake(60, 10, self.view.frame.size.width - 2*60, 150);
     lab2.backgroundColor = [UIColor redColor];
     lab2.text = @"我是lab2";
     lab2.textAlignment = NSTextAlignmentCenter;
     
     NSArray *imageArr = @[@"http://txt25-2.book118.com/2017/0420/book99787/99786555.jpg",
-                          @"http://d.hiphotos.baidu.com/image/h%3D200/sign=8663264274f082023292963f7bfbfb8a/f3d3572c11dfa9eca13b947665d0f703918fc1be.jpg",
+                          @"http://pic23.nipic.com/20120816/10691507_162853344170_2.jpg",
                           lab,
                           @"http://pic.58pic.com/58pic/15/63/07/42Q58PIC42U_1024.jpg",
                           @"http://d.hiphotos.baidu.com/image/h%3D200/sign=8663264274f082023292963f7bfbfb8a/f3d3572c11dfa9eca13b947665d0f703918fc1be.jpg",
@@ -49,21 +49,15 @@
     
     //回调
     view.endRollingBlock = ^(BOOL isClick, NSInteger currentIndex) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.lab.text = [NSString stringWithFormat:@"- %ld -",(long)currentIndex];
-        });
-    };
-    view.rollingBlock = ^(CGFloat offset) {
-
-//        NSLog(@"------%f",offset);
+        if (!isClick) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.lab.text = [NSString stringWithFormat:@"- %ld -",(long)currentIndex];
+            });
+        }
     };
     
     //设置数据源
     view.contentArr = imageArr;
-    
-//    view.isHorizontal = NO;
-    view.timeInterval = 0;
-    view.isZoom = YES;
     [view reloadView];
 }
 

@@ -16,6 +16,8 @@
 @property (nonatomic, assign) NSInteger currentIndex;
 //默认图片
 @property (nonatomic, copy) UIImage *placeholderImage;
+//图片显示模式
+@property (nonatomic, assign) UIViewContentMode contentMode;
 
 //自动轮播时间间隔 (默认是0）
 // < 0 不自动 不界面循环
