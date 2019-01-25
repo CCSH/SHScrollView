@@ -10,8 +10,11 @@
 
 @interface SHScrollView : UIView
 
+#pragma mark - 必传
 //内容Arr (http、path、view、image、vc)
 @property (nonatomic, copy) NSArray *contentArr;
+
+#pragma mark - 非必传
 //显示位置(设置在 contentArr 之后)
 @property (nonatomic, assign) NSInteger currentIndex;
 //默认图片
@@ -19,17 +22,23 @@
 //图片显示模式
 @property (nonatomic, assign) UIViewContentMode contentMode;
 
+#pragma mark 如果自定义了 item 大小则 timeInterval isZoom失效
+//内容大小(默认与视图相同)
+@property (nonatomic, assign) CGSize itemSize;
+//间距(isHorizontal 为 YES 则是X 否则为Y)
+@property (nonatomic, assign) CGFloat space;
+
 //自动轮播时间间隔 (默认是0）
 // < 0 不自动 不界面循环
 // = 0 不自动 界面循环
 // > 0 自动 界面循环
 @property (nonatomic, assign) CGFloat timeInterval;
-
 //是否是水平方向(默认 YES)
 @property (nonatomic, assign) BOOL isHorizontal;
 //是否可以缩放
 @property (nonatomic, assign) BOOL isZoom;
 
+#pragma mark - 回调
 //开始
 @property (nonatomic, copy) void (^startRollingBlock)(void);
 //滚动中

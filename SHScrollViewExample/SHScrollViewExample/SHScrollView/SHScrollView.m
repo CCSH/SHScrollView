@@ -40,25 +40,16 @@ static NSString *cellId = @"SHScrollView";
         UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc]init];
         //设置滑动方向
         layout.scrollDirection = self.isHorizontal;
-        //设置内容大小
-        layout.itemSize = self.bounds.size;
-        //设置水平间距（内部）
-        layout.minimumInteritemSpacing = 0;
-        //设置竖直间距（内部）
-        layout.minimumLineSpacing = 0;
-        //设置外框间距 (外部)
-        layout.sectionInset = UIEdgeInsetsZero;
         
         //内容
         UICollectionView *mainView = [[UICollectionView alloc] initWithFrame:self.bounds collectionViewLayout:layout];
+        
         mainView.backgroundColor = [UIColor clearColor];
         mainView.showsHorizontalScrollIndicator = NO;
         mainView.showsVerticalScrollIndicator = NO;
         mainView.dataSource = self;
         mainView.delegate = self;
         mainView.scrollsToTop = NO;
-        mainView.bounces = NO;
-        mainView.pagingEnabled = YES;
         
         [self addSubview:mainView];
         
@@ -175,11 +166,11 @@ static NSString *cellId = @"SHScrollView";
         baseView = scrollView;
     }
     
-    baseView.frame = self.bounds;
+    baseView.frame = CGRectMake(0, 0, self.itemSize.width, self.itemSize.height);
     
     //设置默认视图
     UIImageView *imageView = [[UIImageView alloc]init];
-    imageView.frame = self.bounds;
+    imageView.frame = baseView.bounds;
     imageView.contentMode = self.contentMode;
     
     if ([obj isKindOfClass:[NSString class]]) {//字符串
@@ -240,8 +231,33 @@ static NSString *cellId = @"SHScrollView";
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     [collectionView deselectItemAtIndexPath:indexPath animated:NO];
+
+    if (![self isSize]) {
+        self.currentIndex = indexPath.row;
+    }
     
     [self tapAction];
+}
+
+#pragma mark - UICollectionViewDelegateFlowLayout
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
+    return self.itemSize;
+}
+
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section{
+    if (self.isHorizontal) {
+        return UIEdgeInsetsMake(0, self.space, 0, self.space);
+    }else{
+        return UIEdgeInsetsMake(self.space, 0, self.space, 0);
+    }
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section{
+    return self.space;
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section{
+    return self.space;
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -255,6 +271,8 @@ static NSString *cellId = @"SHScrollView";
         
         [self timeStop];
     }
+    
+ UILabel
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
@@ -267,6 +285,18 @@ static NSString *cellId = @"SHScrollView";
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     
     if ([scrollView isEqual:self.mainView]) {
+        
+        if (![self isSize]) {
+            
+            if (self.rollingBlock) {
+                if (self.isHorizontal) {
+                    self.rollingBlock(scrollView.contentOffset.x);
+                }else{
+                    self.rollingBlock(scrollView.contentOffset.y);
+                }
+            }
+            return;
+        }
         
         CGFloat index;
         if (self.isHorizontal) {
@@ -385,6 +415,10 @@ static NSString *cellId = @"SHScrollView";
     //刷新内容
     [self.mainView reloadData];
     
+    if (![self isSize]) {
+        return;
+    }
+    
     if (self.timeInterval < 0) {
         //界面不循环
         [self.mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:currentIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
@@ -446,6 +480,23 @@ static NSString *cellId = @"SHScrollView";
         return;
     }
     
+    //设置内容大小
+    if (!(self.itemSize.width || self.itemSize.height)) {
+        self.itemSize = self.frame.size;
+        self.mainView.pagingEnabled = YES;
+    }else{
+        //不一致的时候
+        self.mainView.pagingEnabled = NO;
+        self.timeInterval = -1;
+        self.isZoom = NO;
+    }
+    
+    if (self.timeInterval < 0) {
+        self.mainView.bounces = YES;
+    }else{
+        self.mainView.bounces = NO;
+    }
+    
     //超出数组则重置
     if (!self.currentIndex || self.currentIndex >= self.contentArr.count) {
         self.currentIndex = 0;
@@ -453,6 +504,14 @@ static NSString *cellId = @"SHScrollView";
     
     //处理时间
     [self dealTime];
+}
+
+- (BOOL)isSize{
+    
+    if ((self.itemSize.width == self.frame.size.width && self.itemSize.height == self.frame.size.height)) {
+        return YES;
+    }
+    return NO;
 }
 
 @end
