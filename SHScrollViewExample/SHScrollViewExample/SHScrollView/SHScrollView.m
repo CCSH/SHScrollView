@@ -271,8 +271,6 @@ static NSString *cellId = @"SHScrollView";
         
         [self timeStop];
     }
-    
- UILabel
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
