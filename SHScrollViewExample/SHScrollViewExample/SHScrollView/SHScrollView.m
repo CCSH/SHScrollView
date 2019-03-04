@@ -434,18 +434,14 @@ static NSString *cellId = @"SHScrollView";
 #pragma mark - 时间操作
 #pragma mark 时间处理
 - (void)dealTime{
+    //停止
+    [self timeStop];
     
     if (self.timeInterval > 0) {//存在间隔时间
-        //先处理之前的时间
-        [self timeStop];
-        
         //创建新的时间
         NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:self.timeInterval target:self selector:@selector(nextPage) userInfo:nil repeats:YES];
         [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
         self.timer = timer;
-    }else{
-        //停止
-        [self timeStop];
     }
 }
 
@@ -481,6 +477,11 @@ static NSString *cellId = @"SHScrollView";
     //设置内容大小
     if (!(self.itemSize.width || self.itemSize.height)) {
         self.itemSize = self.frame.size;
+    }
+    
+    //判断
+    if ([self isSize]) {
+        //一致的时候
         self.mainView.pagingEnabled = YES;
     }else{
         //不一致的时候

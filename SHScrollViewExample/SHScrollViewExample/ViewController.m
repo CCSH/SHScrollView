@@ -56,7 +56,7 @@
     
     //设置数据源
     view.contentArr = imageArr;
-    view.timeInterval = 2;
+    view.timeInterval = -1;
 //    view.itemSize = CGSizeMake(200, 150);
 //    view.space = 10;
 //    view.isHorizontal = NO;
