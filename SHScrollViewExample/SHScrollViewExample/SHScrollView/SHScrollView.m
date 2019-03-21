@@ -62,13 +62,6 @@ static NSString *cellId = @"SHScrollView";
     return _mainView;
 }
 
-#pragma mark - 复制试图
-- (id)sh_copyWithObj:(id)obj{
-    
-    NSData *tempArchive = [NSKeyedArchiver archivedDataWithRootObject:obj];
-    return [NSKeyedUnarchiver unarchiveObjectWithData:tempArchive];
-}
-
 #pragma mark - 点击视图
 - (void)tapAction{
     
@@ -214,7 +207,7 @@ static NSString *cellId = @"SHScrollView";
         
     }else if ([obj isKindOfClass:[UIView class]]){//视图
         
-        UIView *view = (UIView *)[self sh_copyWithObj:obj];
+        UIView *view = obj;
         
         [baseView addSubview:view];
         
@@ -223,6 +216,7 @@ static NSString *cellId = @"SHScrollView";
         imageView.image = self.placeholderImage;
         
         [baseView addSubview:imageView];
+        
     }
     
     //添加到视图
