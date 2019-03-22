@@ -35,8 +35,14 @@
 #pragma mark 如果自定义了 item 大小则 timeInterval isZoom失效
 //内容大小(默认与视图相同)
 @property (nonatomic, assign) CGSize itemSize;
-//间距(isHorizontal 为 YES 则是X 否则为Y)
-@property (nonatomic, assign) CGFloat space;
+
+#pragma mark 下方三个属性搭配使用
+//间距X
+@property (nonatomic, assign) CGFloat spaceX;
+//间距Y
+@property (nonatomic, assign) CGFloat spaceY;
+//内容边距
+@property (nonatomic, assign) UIEdgeInsets edgeInset;
 
 #pragma mark - 回调
 //开始

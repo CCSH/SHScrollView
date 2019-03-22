@@ -57,8 +57,10 @@
     //设置数据源
     view.contentArr = imageArr;
     view.timeInterval = -1;
-//    view.itemSize = CGSizeMake(200, 150);
-//    view.space = 10;
+//    view.itemSize = CGSizeMake(100, 80);
+//    view.spaceX = 10;
+//    view.spaceY = 10;
+//    view.edgeInset = UIEdgeInsetsMake(10, 10, 10, 10);
 //    view.isHorizontal = NO;
     [view reloadView];
 }

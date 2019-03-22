@@ -240,15 +240,23 @@ static NSString *cellId = @"SHScrollView";
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section{
     
-    return UIEdgeInsetsZero;
+    return self.edgeInset;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section{
-    return self.space;
+    if (self.isHorizontal) {
+        return self.spaceX;
+    }else{
+        return self.spaceY;
+    }
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section{
-    return self.space;
+    if (self.isHorizontal) {
+        return self.spaceY;
+    }else{
+        return self.spaceX;
+    }
 }
 
 #pragma mark - UIScrollViewDelegate
