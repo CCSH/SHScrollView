@@ -219,6 +219,7 @@ static NSString *cellId = @"SHScrollView";
         
     }
     
+    cell.contentView.layer.masksToBounds = YES;
     //添加到视图
     [cell.contentView addSubview:baseView];
 }
