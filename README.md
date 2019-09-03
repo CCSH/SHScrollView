@@ -4,6 +4,7 @@
 
 基于UICollectionView三个视图，实现无限轮播
 # 使用 pod 导入
+[![Pod Version](http://img.shields.io/cocoapods/v/SHScrollView.svg?style=flat)](http://cocoadocs.org/docsets/SHScrollView/)
 ```
 pod 'SHScrollView'
 ```
