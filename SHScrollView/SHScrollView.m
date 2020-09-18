@@ -474,16 +474,14 @@ static NSString *cellId = @"SHScrollView";
         return;
     }
 
-    if (self.timeInterval < 0)
-    {
-        //界面不循环
-        [self.mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:currentIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
-    }
-    else
+    NSInteger index = currentIndex;
+    if (self.timeInterval >= 0)
     {
         //界面循环
-        [self.mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
+        index = 1;
     }
+    
+    [self.mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
 
     //滚动了一页
     if (self.endRollingBlock)
