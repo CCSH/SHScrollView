@@ -7,7 +7,7 @@
 //
 
 #import "SHScrollView.h"
-#import "UIImageView+WebCache.h"
+#import <UIImageView+WebCache.h>
 
 @interface SHScrollView () < UICollectionViewDataSource, UICollectionViewDelegate >
 
@@ -15,6 +15,8 @@
 @property (nonatomic, weak) NSTimer *timer;
 //内容视图
 @property (nonatomic, weak) UICollectionView *mainView;
+
+@property (nonatomic, assign) BOOL isFull;
 
 @end
 
@@ -28,7 +30,8 @@ static NSString *cellId = @"SHScrollView";
     self = [super initWithFrame:frame];
     if (self)
     {
-        self.isHorizontal = YES;
+        self.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+        self.labBGColor = [UIColor clearColor];
     }
     return self;
 }
@@ -41,7 +44,7 @@ static NSString *cellId = @"SHScrollView";
         //UICollectionView的自动布局
         UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
         //设置滑动方向
-        layout.scrollDirection = self.isHorizontal;
+        layout.scrollDirection = self.scrollDirection;
 
         //内容
         UICollectionView *mainView = [[UICollectionView alloc] initWithFrame:self.bounds collectionViewLayout:layout];
@@ -64,13 +67,116 @@ static NSString *cellId = @"SHScrollView";
     return _mainView;
 }
 
-#pragma mark - 点击视图
+#pragma mark - 私有方法
+#pragma mark 点击视图
 - (void)tapAction
 {
     if (self.endRollingBlock)
     {
         self.endRollingBlock(YES, self.currentIndex);
     }
+}
+
+#pragma mark 配置数据源
+- (void)configCell:(UICollectionViewCell *)cell obj:(id)obj
+{
+    //移除所有子视图
+    [cell.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+
+    //添加视图
+    UIScrollView *baseView = [[UIScrollView alloc] init];
+    //添加到视图
+    [cell.contentView addSubview:baseView];
+    
+    if (self.isZoom)
+    {
+        baseView.delegate = self;
+        baseView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        baseView.minimumZoomScale = 1;
+        baseView.maximumZoomScale = 10;
+        baseView.showsVerticalScrollIndicator = NO;
+        baseView.showsHorizontalScrollIndicator = NO;
+        //添加点击
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction)];
+        [baseView addGestureRecognizer:tap];
+    }
+    
+    baseView.frame = CGRectMake(0, 0, self.itemSize.width, self.itemSize.height);
+
+    //设置默认视图
+    UIImageView *imageView = [[UIImageView alloc] init];
+    imageView.frame = baseView.bounds;
+    imageView.contentMode = self.contentMode;
+
+    if ([obj isKindOfClass:[NSString class]])
+    { //字符串
+
+        NSString *str = (NSString *)obj;
+
+        if ([str hasPrefix:@"http"])
+        { //网络图片
+
+            //设置默认视图
+            [imageView sd_setImageWithURL:[NSURL URLWithString:str] placeholderImage:self.placeholderImage];
+            [baseView addSubview:imageView];
+        }
+        else
+        {//lab
+            
+            UILabel *lab = [self getLabView];
+            lab.frame = baseView.bounds;
+            lab.text = str;
+            [baseView addSubview:lab];
+        }
+    }
+    else if ([obj isKindOfClass:[NSAttributedString class]])
+    { //富文本
+        
+        UILabel *lab = [self getLabView];
+        lab.frame = baseView.bounds;
+        lab.attributedText = (NSAttributedString *)obj;
+        [baseView addSubview:lab];
+    }
+    else if ([obj isKindOfClass:[UIImage class]])
+    { //图片
+
+        UIImageView *imageView = [[UIImageView alloc] init];
+        imageView.frame = baseView.bounds;
+        imageView.contentMode = self.contentMode;
+        imageView.image = (UIImage *)obj;
+        [baseView addSubview:imageView];
+    }
+    else if ([obj isKindOfClass:[UIViewController class]])
+    { //控制器
+
+        UIViewController *vc = (UIViewController *)obj;
+        vc.view.frame = baseView.bounds;
+        [baseView addSubview:vc.view];
+    }
+    else if ([obj isKindOfClass:[UIView class]])
+    { //视图
+
+        UIView *view = obj;
+        [baseView addSubview:view];
+    }
+    else
+    { //展示默认图片
+
+        imageView.image = self.placeholderImage;
+        [baseView addSubview:imageView];
+    }
+
+}
+
+- (UILabel *)getLabView
+{
+    UILabel *lab = [[UILabel alloc] init];
+    lab.backgroundColor = self.labBGColor;
+    lab.textColor = self.textColor;
+    lab.font = self.font;
+    lab.textAlignment = self.textAlignment;
+    lab.numberOfLines = self.numberOfLines;
+    return lab;
 }
 
 #pragma mark - UICollectionViewDelegate
@@ -96,14 +202,15 @@ static NSString *cellId = @"SHScrollView";
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellId forIndexPath:indexPath];
-
+    cell.contentView.layer.masksToBounds = YES;
+    
     NSInteger index = indexPath.row;
 
     //计算位置
     if ((self.timeInterval >= 0))
     {
         //界面循环
-        index = self.currentIndex - 1 + indexPath.row;
+        index = self.currentIndex - 1 + index;
     }
 
     id data = self.contentArr[[self getIndex:index]];
@@ -141,109 +248,11 @@ static NSString *cellId = @"SHScrollView";
     return index;
 }
 
-#pragma mark 配置数据源
-- (void)configCell:(UICollectionViewCell *)cell obj:(id)obj
-{
-    //移除所有子视图
-    [cell.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
-
-    //添加视图
-    UIView *baseView = [[UIView alloc] init];
-
-    if (self.isZoom)
-    {
-        UIScrollView *scrollView = [[UIScrollView alloc] init];
-        scrollView.delegate = self;
-        scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        scrollView.minimumZoomScale = 1;
-        scrollView.maximumZoomScale = 10;
-        scrollView.showsVerticalScrollIndicator = NO;
-        scrollView.showsHorizontalScrollIndicator = NO;
-        //添加点击
-        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction)];
-        [scrollView addGestureRecognizer:tap];
-
-        baseView = scrollView;
-    }
-
-    baseView.frame = CGRectMake(0, 0, self.itemSize.width, self.itemSize.height);
-
-    //设置默认视图
-    UIImageView *imageView = [[UIImageView alloc] init];
-    imageView.frame = baseView.bounds;
-    imageView.contentMode = self.contentMode;
-
-    if ([obj isKindOfClass:[NSString class]])
-    { //字符串
-
-        NSString *str = (NSString *)obj;
-
-        if ([str hasPrefix:@"http"])
-        { //网络图片
-
-            [imageView sd_setImageWithURL:[NSURL URLWithString:str] placeholderImage:self.placeholderImage];
-        }
-        else
-        {
-            //资源图片
-            UIImage *image = [UIImage imageNamed:str];
-
-            if (!image)
-            { //本地图片
-
-                image = [UIImage imageWithContentsOfFile:str];
-            }
-            if (!image)
-            { //默认图片
-
-                image = self.placeholderImage;
-            }
-            imageView.image = image;
-        }
-
-        [baseView addSubview:imageView];
-    }
-    else if ([obj isKindOfClass:[UIImage class]])
-    { //图片
-
-        UIImage *image = (UIImage *)obj;
-        imageView.image = image;
-
-        [baseView addSubview:imageView];
-    }
-    else if ([obj isKindOfClass:[UIViewController class]])
-    { //控制器
-
-        UIViewController *vc = (UIViewController *)obj;
-        vc.view.frame = baseView.bounds;
-
-        [baseView addSubview:vc.view];
-    }
-    else if ([obj isKindOfClass:[UIView class]])
-    { //视图
-
-        UIView *view = obj;
-
-        [baseView addSubview:view];
-    }
-    else
-    { //展示默认图片
-
-        imageView.image = self.placeholderImage;
-
-        [baseView addSubview:imageView];
-    }
-
-    cell.contentView.layer.masksToBounds = YES;
-    //添加到视图
-    [cell.contentView addSubview:baseView];
-}
-
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     [collectionView deselectItemAtIndexPath:indexPath animated:NO];
 
-    if (![self isFull])
+    if (!self.isFull)
     {
         self.currentIndex = indexPath.row;
     }
@@ -264,26 +273,14 @@ static NSString *cellId = @"SHScrollView";
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
 {
-    if (self.isHorizontal)
-    {
-        return self.spaceX;
-    }
-    else
-    {
-        return self.spaceY;
-    }
+    //item 主轴方向间距
+    return self.space;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
 {
-    if (self.isHorizontal)
-    {
-        return self.spaceY;
-    }
-    else
-    {
-        return self.spaceX;
-    }
+    //item 辅轴方向间距
+    return 0;
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -313,11 +310,11 @@ static NSString *cellId = @"SHScrollView";
 {
     if ([scrollView isEqual:self.mainView])
     {
-        if (![self isFull])
+        if (!self.isFull)
         {
             if (self.rollingBlock)
             {
-                if (self.isHorizontal)
+                if (self.scrollDirection == UICollectionViewScrollDirectionHorizontal)
                 {
                     self.rollingBlock(scrollView.contentOffset.x);
                 }
@@ -330,7 +327,7 @@ static NSString *cellId = @"SHScrollView";
         }
 
         CGFloat index;
-        if (self.isHorizontal)
+        if (self.scrollDirection == UICollectionViewScrollDirectionHorizontal)
         {
             index = scrollView.contentOffset.x / (scrollView.frame.size.width);
         }
@@ -342,46 +339,44 @@ static NSString *cellId = @"SHScrollView";
         if (index == (NSInteger)index)
         { //滑动了一页
 
+            NSInteger temp = self.currentIndex;
+            
             if (self.timeInterval < 0)
             { //界面不循环
 
-                self.currentIndex = (NSInteger)index;
+                temp = (NSInteger)index;
             }
             else
             { //界面循环
 
+                
                 switch ((NSInteger)index)
                 {
                     case 0: //左
                     {
-                        if (self.currentIndex <= 0)
-                        { //第一页
-                            self.currentIndex = self.contentArr.count - 1;
-                        }
-                        else
-                        {
-                            self.currentIndex -= 1;
-                        }
+                        temp -= 1;
                     }
                     break;
                     case 2: //右
                     {
-                        if (self.currentIndex >= self.contentArr.count - 1)
-                        { //最后一页
-                            self.currentIndex = 0;
-                        }
-                        else
-                        {
-                            self.currentIndex += 1;
-                        }
+                        temp += 1;
                     }
                     break;
                     default:
                         break;
                 }
+                //保护
+                if (temp < 0) {
+                    temp = self.contentArr.count - 1;
+                }
+                if (temp >= self.contentArr.count) {
+                    temp = 0;
+                }
+           
             }
 
-            index = self.currentIndex;
+            self.currentIndex = temp;
+            index = temp;
         }
         else
         { //滑动中
@@ -389,27 +384,17 @@ static NSString *cellId = @"SHScrollView";
             if (self.timeInterval >= 0)
             { //界面循环
 
-                if ((NSInteger)index == 0)
-                { //右滑
-
-                    if (self.currentIndex == 0)
-                    { //第一个
-
-                        index = self.contentArr.count - 1 + index;
-                    }
-                    else
-                    {
-                        index = self.currentIndex - 1 + index;
-                    }
+                NSInteger temp = 0;
+                if (self.currentIndex == 0) {
+                    temp = self.contentArr.count - 1;
+                }else{
+                    temp = self.currentIndex - 1;
                 }
-                else if ((NSInteger)index == 1)
-                { //左滑
-
-                    index = self.currentIndex - 1 + index;
-                }
+                
+                index += temp;
             }
         }
-
+        
         //滚动中
         if (self.rollingBlock)
         {
@@ -469,7 +454,7 @@ static NSString *cellId = @"SHScrollView";
     //刷新内容
     [self.mainView reloadData];
 
-    if (![self isFull])
+    if (!self.isFull)
     {
         return;
     }
@@ -480,7 +465,7 @@ static NSString *cellId = @"SHScrollView";
         //界面循环
         index = 1;
     }
-    
+
     [self.mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
 
     //滚动了一页
@@ -542,10 +527,21 @@ static NSString *cellId = @"SHScrollView";
     if (!(self.itemSize.width || self.itemSize.height))
     {
         self.itemSize = self.frame.size;
+        self.isFull = YES;
+    }
+
+    if (self.space)
+    {
+        self.isFull = NO;
+    }
+
+    if (self.edgeInset.top || self.edgeInset.left || self.edgeInset.bottom || self.edgeInset.right)
+    {
+        self.isFull = NO;
     }
 
     //判断
-    if ([self isFull])
+    if (self.isFull)
     {
         //一致的时候
         self.mainView.pagingEnabled = YES;
@@ -577,13 +573,17 @@ static NSString *cellId = @"SHScrollView";
     [self dealTime];
 }
 
-- (BOOL)isFull
+#pragma mark - 禁止拖动
+- (void)disableDrag
 {
-    if ((self.itemSize.width == self.frame.size.width && self.itemSize.height == self.frame.size.height))
+    self.mainView.canCancelContentTouches = NO;
+    for (UIGestureRecognizer *gesture in self.mainView.gestureRecognizers)
     {
-        return YES;
+        if ([gesture isKindOfClass:[UIPanGestureRecognizer class]])
+        {
+            [self.mainView removeGestureRecognizer:gesture];
+        }
     }
-    return NO;
 }
 
 @end

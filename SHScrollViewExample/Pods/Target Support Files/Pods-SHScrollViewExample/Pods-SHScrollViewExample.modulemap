@@ -1,0 +1,6 @@
+framework module Pods_SHScrollViewExample {
+  umbrella header "Pods-SHScrollViewExample-umbrella.h"
+
+  export *
+  module * { export * }
+}
