@@ -87,7 +87,7 @@ static NSString *cellId = @"SHScrollView";
     UIScrollView *baseView = [[UIScrollView alloc] init];
     //添加到视图
     [cell.contentView addSubview:baseView];
-    
+
     if (self.isZoom)
     {
         baseView.delegate = self;
@@ -100,7 +100,7 @@ static NSString *cellId = @"SHScrollView";
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction)];
         [baseView addGestureRecognizer:tap];
     }
-    
+
     baseView.frame = CGRectMake(0, 0, self.itemSize.width, self.itemSize.height);
 
     //设置默认视图
@@ -121,8 +121,8 @@ static NSString *cellId = @"SHScrollView";
             [baseView addSubview:imageView];
         }
         else
-        {//lab
-            
+        { //lab
+
             UILabel *lab = [self getLabView];
             lab.frame = baseView.bounds;
             lab.text = str;
@@ -131,7 +131,7 @@ static NSString *cellId = @"SHScrollView";
     }
     else if ([obj isKindOfClass:[NSAttributedString class]])
     { //富文本
-        
+
         UILabel *lab = [self getLabView];
         lab.frame = baseView.bounds;
         lab.attributedText = (NSAttributedString *)obj;
@@ -165,7 +165,6 @@ static NSString *cellId = @"SHScrollView";
         imageView.image = self.placeholderImage;
         [baseView addSubview:imageView];
     }
-
 }
 
 - (UILabel *)getLabView
@@ -182,42 +181,54 @@ static NSString *cellId = @"SHScrollView";
 #pragma mark - UICollectionViewDelegate
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
-    return 1;
+    if (collectionView == self.mainView)
+    {
+        return 1;
+    }
+    return 0;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    if (self.timeInterval >= 0)
+    if (collectionView == self.mainView)
     {
-        return 3;
+        if (self.timeInterval >= 0)
+        {
+            return 3;
+        }
+        else
+        {
+            //不循环
+            return self.contentArr.count;
+        }
     }
-    else
-    {
-        //不循环
-        return self.contentArr.count;
-    }
+    return 0;
 }
 
 #pragma mark 实例化UICollectionView
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellId forIndexPath:indexPath];
-    cell.contentView.layer.masksToBounds = YES;
-    
-    NSInteger index = indexPath.row;
-
-    //计算位置
-    if ((self.timeInterval >= 0))
+    if (collectionView == self.mainView)
     {
-        //界面循环
-        index = self.currentIndex - 1 + index;
+        UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellId forIndexPath:indexPath];
+        cell.contentView.layer.masksToBounds = YES;
+
+        NSInteger index = indexPath.row;
+
+        //计算位置
+        if ((self.timeInterval >= 0))
+        {
+            //界面循环
+            index = self.currentIndex - 1 + index;
+        }
+
+        id data = self.contentArr[[self getIndex:index]];
+        //配置数据源
+        [self configCell:cell obj:data];
+
+        return cell;
     }
-
-    id data = self.contentArr[[self getIndex:index]];
-    //配置数据源
-    [self configCell:cell obj:data];
-
-    return cell;
+    return nil;
 }
 
 - (NSInteger)getIndex:(NSInteger)index
@@ -250,31 +261,46 @@ static NSString *cellId = @"SHScrollView";
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    [collectionView deselectItemAtIndexPath:indexPath animated:NO];
-
-    if (!self.isFull)
+    if (collectionView == self.mainView)
     {
-        self.currentIndex = indexPath.row;
-    }
+        [collectionView deselectItemAtIndexPath:indexPath animated:NO];
 
-    [self tapAction];
+        if (!self.isFull)
+        {
+            self.currentIndex = indexPath.row;
+        }
+
+        [self tapAction];
+    }
 }
 
 #pragma mark - UICollectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return self.itemSize;
+    if (collectionView == self.mainView)
+    {
+        return self.itemSize;
+    }
+    return CGSizeZero;
 }
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
 {
-    return self.edgeInset;
+    if (collectionView == self.mainView)
+    {
+        return self.edgeInset;
+    }
+    return UIEdgeInsetsZero;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
 {
-    //item 主轴方向间距
-    return self.space;
+    if (collectionView == self.mainView)
+    {
+        //item 主轴方向间距
+        return self.space;
+    }
+    return 0;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
@@ -340,7 +366,7 @@ static NSString *cellId = @"SHScrollView";
         { //滑动了一页
 
             NSInteger temp = self.currentIndex;
-            
+
             if (self.timeInterval < 0)
             { //界面不循环
 
@@ -349,7 +375,6 @@ static NSString *cellId = @"SHScrollView";
             else
             { //界面循环
 
-                
                 switch ((NSInteger)index)
                 {
                     case 0: //左
@@ -366,13 +391,14 @@ static NSString *cellId = @"SHScrollView";
                         break;
                 }
                 //保护
-                if (temp < 0) {
+                if (temp < 0)
+                {
                     temp = self.contentArr.count - 1;
                 }
-                if (temp >= self.contentArr.count) {
+                if (temp >= self.contentArr.count)
+                {
                     temp = 0;
                 }
-           
             }
 
             self.currentIndex = temp;
@@ -385,16 +411,19 @@ static NSString *cellId = @"SHScrollView";
             { //界面循环
 
                 NSInteger temp = 0;
-                if (self.currentIndex == 0) {
+                if (self.currentIndex == 0)
+                {
                     temp = self.contentArr.count - 1;
-                }else{
+                }
+                else
+                {
                     temp = self.currentIndex - 1;
                 }
-                
+
                 index += temp;
             }
         }
-        
+
         //滚动中
         if (self.rollingBlock)
         {
