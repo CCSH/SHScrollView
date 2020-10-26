@@ -44,6 +44,9 @@
     //回调
     view.endRollingBlock = ^(BOOL isClick, NSInteger currentIndex) {
         self.lab.text = [NSString stringWithFormat:@"- %ld -",(long)currentIndex];
+        if (isClick) {
+            
+        }
     };
     view.rollingBlock = ^(CGFloat offset) {
         NSLog(@"滚动中====%f",offset);

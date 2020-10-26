@@ -82,12 +82,16 @@ static NSString *cellId = @"SHScrollView";
 {
     //移除所有子视图
     [cell.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
-
+ 
     //添加视图
     UIScrollView *baseView = [[UIScrollView alloc] init];
+    baseView.frame = CGRectMake(0, 0, self.itemSize.width, self.itemSize.height);
+    //添加点击
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction)];
+    [baseView addGestureRecognizer:tap];
     //添加到视图
     [cell.contentView addSubview:baseView];
-
+    
     if (self.isZoom)
     {
         baseView.delegate = self;
@@ -96,12 +100,7 @@ static NSString *cellId = @"SHScrollView";
         baseView.maximumZoomScale = 10;
         baseView.showsVerticalScrollIndicator = NO;
         baseView.showsHorizontalScrollIndicator = NO;
-        //添加点击
-        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction)];
-        [baseView addGestureRecognizer:tap];
     }
-
-    baseView.frame = CGRectMake(0, 0, self.itemSize.width, self.itemSize.height);
 
     //设置默认视图
     UIImageView *imageView = [[UIImageView alloc] init];
