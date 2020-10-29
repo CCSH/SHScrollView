@@ -11,7 +11,7 @@
 @interface SHScrollView : UIView
 
 #pragma mark - 必传
-//内容Arr (http、UIView、UIImage、UIViewController, NSString ,NSAttributedString)
+//内容Arr (网址、UIView、UIImage、UIViewController, NSString ,NSAttributedString)
 @property (nonatomic, copy) NSArray *contentArr;
 
 #pragma mark - 非必传
@@ -43,7 +43,7 @@
 @property (nonatomic, assign) UIEdgeInsets edgeInset;
 
 #pragma mark 标签样式
-//如果 contentArr 有 str格式则使用uilabel展示
+//如果 contentArr 有 str、NSAttributedString格式则使用UILabel展示
 @property (nonatomic, strong) UIColor *labBGColor;
 @property (nonatomic, assign) NSTextAlignment textAlignment;
 @property (nonatomic, strong) UIColor *textColor;
@@ -57,6 +57,8 @@
 @property (nonatomic, copy) void (^rollingBlock)(CGFloat offset);
 //滚动了一页
 @property (nonatomic, copy) void (^endRollingBlock)(BOOL isClick,NSInteger currentIndex);
+//内容返回
+@property (nonatomic, copy) UIView *(^contentView)(id obj, NSInteger currentIndex);
 
 //刷新视图
 - (void)reloadView;

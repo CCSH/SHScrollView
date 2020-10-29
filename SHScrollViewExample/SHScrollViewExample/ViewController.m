@@ -19,7 +19,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    
 
     UILabel *lab = [[UILabel alloc]init];
     lab.frame = CGRectMake(10, 10, 100, 100);
@@ -37,15 +36,14 @@
     
     SHScrollView *view = [[SHScrollView alloc]init];
     view.frame = CGRectMake((self.view.frame.size.width - 300)/2, 100, 300, 150);
-    view.backgroundColor = [UIColor orangeColor];
-
+ 
     [self.view addSubview:view];
     
     //回调
     view.endRollingBlock = ^(BOOL isClick, NSInteger currentIndex) {
         self.lab.text = [NSString stringWithFormat:@"- %ld -",(long)currentIndex];
         if (isClick) {
-            
+            NSLog(@"点击了 === %ld",(long)currentIndex);
         }
     };
     view.rollingBlock = ^(CGFloat offset) {
@@ -55,6 +53,20 @@
     //设置数据源
     view.contentArr = contentArr;
     view.timeInterval = 3;
+    view.itemSize = CGSizeMake(300, 150);
+//    view.space = 10;
+//    view.edgeInset = UIEdgeInsetsMake(10, 10, 0, 10);
+//    view.scrollDirection = UICollectionViewScrollDirectionVertical;
+    
+    view.contentView = ^UIView *(id obj, NSInteger currentIndex) {
+        if (currentIndex == 3) {
+            UILabel *lab = [UILabel new];
+            lab.frame = CGRectMake(0, 0, 200, 150);
+            lab.text = [NSString stringWithFormat:@"%ld",(long)currentIndex];
+            return lab;
+        }
+        return nil;
+    };
 
     [view reloadView];
 }
