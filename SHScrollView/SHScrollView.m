@@ -80,31 +80,8 @@ static NSString *cellId = @"SHScrollView";
 }
 
 #pragma mark 配置数据源
-- (void)configCell:(UICollectionViewCell *)cell obj:(id)obj
+- (void)configView:(UIView *)baseView obj:(id)obj
 {
-    UIView *baseView = cell.contentView;
-    
-    if (self.isZoom)
-    { //可以缩放使用 UIScrollView
-        //添加视图
-        UIScrollView *scroll = [[UIScrollView alloc] init];
-        scroll.delegate = self;
-        scroll.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        scroll.minimumZoomScale = 1;
-        scroll.maximumZoomScale = 10;
-        scroll.showsVerticalScrollIndicator = NO;
-        scroll.showsHorizontalScrollIndicator = NO;
-        
-        //添加点击
-        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction)];
-        [scroll addGestureRecognizer:tap];
-        
-        //添加到视图
-        [cell.contentView addSubview:scroll];
-        
-        baseView = scroll;
-    }
-    
     //设置默认视图
     UIImageView *imageView = [[UIImageView alloc] init];
     imageView.frame = baseView.bounds;
@@ -211,6 +188,13 @@ static NSString *cellId = @"SHScrollView";
     [cell.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
     cell.contentView.layer.masksToBounds = YES;
     
+    UIView *baseView = [self getBaseView];
+    if (!baseView) {
+        baseView = cell.contentView;
+    }else{
+        [cell.contentView addSubview:baseView];
+    }
+    
     NSInteger index = indexPath.row;
     
     //计算位置
@@ -222,21 +206,42 @@ static NSString *cellId = @"SHScrollView";
     index = [self getIndex:index];
     id data = self.contentArr[[self getIndex:index]];
     
-
-    
     UIView *view;
     if (self.contentView) {
         view = self.contentView(data,index);
     }
-        
+    
     if (view) {
-        [cell.contentView addSubview:self.contentView(data,index)];
+        [baseView addSubview:self.contentView(data,index)];
     }else{
         //配置数据源
-        [self configCell:cell obj:data];
+        [self configView:baseView obj:data];
     }
  
     return cell;
+}
+
+- (UIView *)getBaseView{
+    
+    if (self.isZoom)
+    { //可以缩放使用 UIScrollView
+        //添加视图
+        UIScrollView *scroll = [[UIScrollView alloc] init];
+        scroll.frame = CGRectMake(0, 0, self.itemSize.width, self.itemSize.height);
+        scroll.delegate = self;
+        scroll.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        scroll.minimumZoomScale = 1;
+        scroll.maximumZoomScale = 10;
+        scroll.showsVerticalScrollIndicator = NO;
+        scroll.showsHorizontalScrollIndicator = NO;
+        
+        //添加点击
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction)];
+        [scroll addGestureRecognizer:tap];
+        
+        return scroll;
+    }
+    return nil;
 }
 
 - (NSInteger)getIndex:(NSInteger)index
@@ -581,6 +586,10 @@ static NSString *cellId = @"SHScrollView";
         self.mainView.pagingEnabled = NO;
         self.timeInterval = -1;
         self.isZoom = NO;
+    }
+    
+    if (self.isZoom) {
+        self.timeInterval = -1;
     }
     
     if (self.timeInterval < 0)

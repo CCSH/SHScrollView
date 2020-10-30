@@ -54,6 +54,7 @@
     view.contentArr = contentArr;
     view.timeInterval = 3;
     view.itemSize = CGSizeMake(300, 150);
+    view.isZoom = YES;
 //    view.space = 10;
 //    view.edgeInset = UIEdgeInsetsMake(10, 10, 0, 10);
 //    view.scrollDirection = UICollectionViewScrollDirectionVertical;
