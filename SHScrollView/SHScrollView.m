@@ -34,6 +34,8 @@ static NSString *cellId = @"SHScrollView";
     {
         self.scrollDirection = UICollectionViewScrollDirectionHorizontal;
         self.labBGColor = [UIColor clearColor];
+        self.isClick = YES;
+        self.isFull = YES;
     }
     return self;
 }
