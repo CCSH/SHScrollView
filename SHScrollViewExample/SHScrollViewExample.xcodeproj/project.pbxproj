@@ -14,7 +14,7 @@
 		5C3AA64321428CB2003B0744 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C3AA64221428CB2003B0744 /* Assets.xcassets */; };
 		5C3AA64621428CB2003B0744 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5C3AA64421428CB2003B0744 /* LaunchScreen.storyboard */; };
 		5C3AA64921428CB2003B0744 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C3AA64821428CB2003B0744 /* main.m */; };
-		5C3AA69F21428CCE003B0744 /* SHScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C3AA68D21428CCE003B0744 /* SHScrollView.m */; };
+		83FF4C6525ECB3BC00E9D568 /* SHScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FF4C6325ECB3BC00E9D568 /* SHScrollView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,8 +48,8 @@
 		5C3AA64821428CB2003B0744 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		5C3AA64E21428CB2003B0744 /* SHScrollViewExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SHScrollViewExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C3AA65921428CB2003B0744 /* SHScrollViewExampleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SHScrollViewExampleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		5C3AA68D21428CCE003B0744 /* SHScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHScrollView.m; sourceTree = "<group>"; };
-		5C3AA68E21428CCE003B0744 /* SHScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHScrollView.h; sourceTree = "<group>"; };
+		83FF4C6325ECB3BC00E9D568 /* SHScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHScrollView.m; sourceTree = "<group>"; };
+		83FF4C6425ECB3BC00E9D568 /* SHScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHScrollView.h; sourceTree = "<group>"; };
 		CEE7869AF565042521E5B1CE /* Pods-SHScrollViewExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SHScrollViewExample.debug.xcconfig"; path = "Target Support Files/Pods-SHScrollViewExample/Pods-SHScrollViewExample.debug.xcconfig"; sourceTree = "<group>"; };
 		E5223D6BDA05BFB262A25184 /* Pods-SHScrollViewExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SHScrollViewExample.release.xcconfig"; path = "Target Support Files/Pods-SHScrollViewExample/Pods-SHScrollViewExample.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -111,7 +111,7 @@
 		5C3AA63821428CB0003B0744 /* SHScrollViewExample */ = {
 			isa = PBXGroup;
 			children = (
-				5C3AA68C21428CCE003B0744 /* SHScrollView */,
+				83FF4C6225ECB3BC00E9D568 /* SHScrollView */,
 				5C3AA63921428CB0003B0744 /* AppDelegate.h */,
 				5C3AA63A21428CB0003B0744 /* AppDelegate.m */,
 				5C3AA63C21428CB0003B0744 /* ViewController.h */,
@@ -125,13 +125,14 @@
 			path = SHScrollViewExample;
 			sourceTree = "<group>";
 		};
-		5C3AA68C21428CCE003B0744 /* SHScrollView */ = {
+		83FF4C6225ECB3BC00E9D568 /* SHScrollView */ = {
 			isa = PBXGroup;
 			children = (
-				5C3AA68E21428CCE003B0744 /* SHScrollView.h */,
-				5C3AA68D21428CCE003B0744 /* SHScrollView.m */,
+				83FF4C6425ECB3BC00E9D568 /* SHScrollView.h */,
+				83FF4C6325ECB3BC00E9D568 /* SHScrollView.m */,
 			);
-			path = SHScrollView;
+			name = SHScrollView;
+			path = ../../SHScrollView;
 			sourceTree = "<group>";
 		};
 		8A13AF9E1C603751E0A6878B /* Pods */ = {
@@ -318,8 +319,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				5C3AA63E21428CB0003B0744 /* ViewController.m in Sources */,
-				5C3AA69F21428CCE003B0744 /* SHScrollView.m in Sources */,
 				5C3AA64921428CB2003B0744 /* main.m in Sources */,
+				83FF4C6525ECB3BC00E9D568 /* SHScrollView.m in Sources */,
 				5C3AA63B21428CB0003B0744 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

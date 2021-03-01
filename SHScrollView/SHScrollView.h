@@ -11,7 +11,7 @@
 @interface SHScrollView : UIView
 
 #pragma mark - 必传
-//内容Arr (网址、UIView、UIImage、UIViewController, NSString ,NSAttributedString)
+//内容Arr (http、UIView、UIImage、UIViewController, NSString ,NSAttributedString)
 @property (nonatomic, copy) NSArray *contentArr;
 
 #pragma mark - 非必传
@@ -25,6 +25,8 @@
 @property (nonatomic, assign) UICollectionViewScrollDirection scrollDirection;
 //是否可以缩放
 @property (nonatomic, assign) BOOL isZoom;
+//是否可以点击
+@property (nonatomic, assign) BOOL isClick;
 
 //自动轮播时间间隔 (默认是0）
 // < 0 不自动 不界面循环
@@ -43,7 +45,7 @@
 @property (nonatomic, assign) UIEdgeInsets edgeInset;
 
 #pragma mark 标签样式
-//如果 contentArr 有 str、NSAttributedString格式则使用UILabel展示
+//如果 contentArr 有 str格式则使用uilabel展示
 @property (nonatomic, strong) UIColor *labBGColor;
 @property (nonatomic, assign) NSTextAlignment textAlignment;
 @property (nonatomic, strong) UIColor *textColor;
