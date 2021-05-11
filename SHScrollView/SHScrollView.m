@@ -398,6 +398,10 @@ static NSString *cellId = @"SHScrollView";
 
 #pragma mark - SET
 - (void)setCurrentIndex:(NSInteger)currentIndex {
+    //相同 不处理
+    if (_currentIndex == currentIndex) {
+        return;
+    }
     //超过数组限制，不进行处理
     if (currentIndex >= self.contentArr.count) {
         return;
