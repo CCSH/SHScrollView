@@ -403,12 +403,13 @@ static NSString *cellId = @"SHScrollView";
     if (_currentIndex == currentIndex) {
         return;
     }
+    
+    _currentIndex = currentIndex;
+    
     //超过数组限制，不进行处理
     if (currentIndex >= self.contentArr.count) {
         return;
     }
-    
-    _currentIndex = currentIndex;
     
     //刷新内容
     [self.mainView reloadData];
@@ -467,8 +468,15 @@ static NSString *cellId = @"SHScrollView";
 #pragma mark - 刷新视图
 - (void)reloadView {
     //数组为空
-    if (!self.contentArr.count) {
-        return;
+    NSAssert(self.contentArr.count, @"contentArr不能为空");
+    
+    //拖拽处理
+    if (self.isDisableDrag) {
+        [self disableDrag];
+    }else{
+        if (!self.mainView.canCancelContentTouches) {
+            self.mainView = nil;
+        }
     }
     
     //设置内容大小
@@ -483,15 +491,6 @@ static NSString *cellId = @"SHScrollView";
     
     if (self.edgeInset.top || self.edgeInset.left || self.edgeInset.bottom || self.edgeInset.right) {
         self.isFull = NO;
-    }
-    
-    //拖拽处理
-    if (self.isDisableDrag) {
-        [self disableDrag];
-    }else{
-        if (!self.mainView.canCancelContentTouches) {
-            self.mainView = nil;
-        }
     }
     
     //判断
@@ -511,12 +510,13 @@ static NSString *cellId = @"SHScrollView";
         self.mainView.bounces = NO;
     }
     
+    [self.mainView reloadData];
+    
     //超出数组则重置
-    if (!self.currentIndex || self.currentIndex >= self.contentArr.count) {
+    if (self.currentIndex != -1 || self.currentIndex >= self.contentArr.count) {
         self.currentIndex = 0;
     }
-    
-    [self.mainView reloadData];
+
     //处理时间
     [self dealTime];
 }

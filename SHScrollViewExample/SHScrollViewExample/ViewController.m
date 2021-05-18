@@ -32,12 +32,24 @@
                           lab,
                           @"http://img.zcool.cn/community/01690955496f930000019ae92f3a4e.jpg@2o.jpg",
                           @"我是str"];
-//    contentArr = @[ @"暂无公告" ];
     
     SHScrollView *view = [[SHScrollView alloc]init];
     view.frame = CGRectMake((self.view.frame.size.width - 300)/2, 100, 300, 150);
- 
     [self.view addSubview:view];
+    
+    //设置数据源
+    view.contentArr = contentArr;
+//    view.timeInterval = 5;
+    //内容
+    view.contentView = ^UIView *(id obj, NSInteger currentIndex) {
+        if (currentIndex == 3) {
+            UILabel *lab = [UILabel new];
+            lab.frame = CGRectMake(0, 0, 200, 150);
+            lab.text = [NSString stringWithFormat:@"啦啦啦啦啦%ld",(long)currentIndex];
+            return lab;
+        }
+        return nil;
+    };
     
     //回调
     view.endRollingBlock = ^(BOOL isClick, NSInteger currentIndex) {
@@ -45,26 +57,6 @@
         if (isClick) {
             NSLog(@"点击了 === %ld",(long)currentIndex);
         }
-    };
-    
-    //设置数据源
-    view.contentArr = contentArr;
-    view.timeInterval = 5;
-    view.itemSize = CGSizeMake(300, 150);
-    view.isZoom = YES;
-//    view.space = 10;
-//    view.edgeInset = UIEdgeInsetsMake(10, 10, 0, 10);
-//    view.scrollDirection = UICollectionViewScrollDirectionVertical;
-//    view.isDisableDrag = YES;
-    
-    view.contentView = ^UIView *(id obj, NSInteger currentIndex) {
-        if (currentIndex == 3) {
-            UILabel *lab = [UILabel new];
-            lab.frame = CGRectMake(0, 0, 200, 150);
-            lab.text = [NSString stringWithFormat:@"%ld",(long)currentIndex];
-            return lab;
-        }
-        return nil;
     };
 
 
