@@ -46,18 +46,16 @@
             NSLog(@"点击了 === %ld",(long)currentIndex);
         }
     };
-    view.rollingBlock = ^(CGFloat offset) {
-        NSLog(@"滚动中====%f",offset);
-    };
     
     //设置数据源
     view.contentArr = contentArr;
-    view.timeInterval = 3;
+    view.timeInterval = 5;
     view.itemSize = CGSizeMake(300, 150);
     view.isZoom = YES;
 //    view.space = 10;
 //    view.edgeInset = UIEdgeInsetsMake(10, 10, 0, 10);
 //    view.scrollDirection = UICollectionViewScrollDirectionVertical;
+//    view.isDisableDrag = YES;
     
     view.contentView = ^UIView *(id obj, NSInteger currentIndex) {
         if (currentIndex == 3) {
@@ -68,6 +66,7 @@
         }
         return nil;
     };
+
 
     [view reloadView];
 }

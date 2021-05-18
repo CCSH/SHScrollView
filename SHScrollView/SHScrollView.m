@@ -32,6 +32,7 @@ static NSString *cellId = @"SHScrollView";
         self.labBGColor = [UIColor clearColor];
         self.isClick = YES;
         self.isFull = YES;
+        self.currentIndex = -1;
     }
     return self;
 }
@@ -484,6 +485,15 @@ static NSString *cellId = @"SHScrollView";
         self.isFull = NO;
     }
     
+    //拖拽处理
+    if (self.isDisableDrag) {
+        [self disableDrag];
+    }else{
+        if (!self.mainView.canCancelContentTouches) {
+            self.mainView = nil;
+        }
+    }
+    
     //判断
     if (self.isFull) {
         //一致的时候
@@ -506,6 +516,7 @@ static NSString *cellId = @"SHScrollView";
         self.currentIndex = 0;
     }
     
+    [self.mainView reloadData];
     //处理时间
     [self dealTime];
 }
