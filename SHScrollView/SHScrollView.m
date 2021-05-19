@@ -468,7 +468,9 @@ static NSString *cellId = @"SHScrollView";
 #pragma mark - 刷新视图
 - (void)reloadView {
     //数组为空
-    NSAssert(self.contentArr.count, @"contentArr不能为空");
+    if (!self.contentArr.count){
+        return;
+    }
     
     //拖拽处理
     if (self.isDisableDrag) {
@@ -513,7 +515,7 @@ static NSString *cellId = @"SHScrollView";
     [self.mainView reloadData];
     
     //超出数组则重置
-    if (self.currentIndex != -1 || self.currentIndex >= self.contentArr.count) {
+    if (self.currentIndex == -1 || self.currentIndex >= self.contentArr.count) {
         self.currentIndex = 0;
     }
 
