@@ -23,11 +23,11 @@
 @property (nonatomic, assign) UIViewContentMode contentMode;
 //滚动方向(默认 水平方向)
 @property (nonatomic, assign) UICollectionViewScrollDirection scrollDirection;
-//是否可以缩放
+//是否可以缩放(默认 NO)
 @property (nonatomic, assign) BOOL isZoom;
-//是否可以点击
+//是否可以点击(默认 YES)
 @property (nonatomic, assign) BOOL isClick;
-//是否禁止拖拽
+//是否禁止拖拽(默认 NO 可以拖拽)
 @property (nonatomic, assign) BOOL isDisableDrag;
 
 //自动轮播时间间隔 (默认是0）
