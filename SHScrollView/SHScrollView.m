@@ -32,6 +32,7 @@ static NSString *cellId = @"SHScrollView";
         self.labBGColor = [UIColor clearColor];
         self.isClick = YES;
         self.isFull = YES;
+        self.isBounces = YES;
         self.currentIndex = -1;
     }
     return self;
@@ -518,16 +519,13 @@ static NSString *cellId = @"SHScrollView";
         self.isZoom = NO;
     }
     
-    if (self.timeInterval < 0) {
-        self.mainView.bounces = YES;
-    } else {
-        self.mainView.bounces = NO;
-    }
+    //弹簧效果
+    self.mainView.bounces = self.isBounces;
     
     [self.mainView reloadData];
     
     //超出数组则重置
-    if (self.currentIndex == -1 || self.currentIndex >= self.contentArr.count) {
+    if (self.currentIndex < 0 || self.currentIndex >= self.contentArr.count) {
         self.currentIndex = 0;
     }
 

@@ -21,7 +21,7 @@
 @property (nonatomic, copy) UIImage *placeholderImage;
 //图片显示模式
 @property (nonatomic, assign) UIViewContentMode contentMode;
-//滚动方向(默认 水平方向)
+//滚动方向(默认 UICollectionViewScrollDirectionHorizontal)
 @property (nonatomic, assign) UICollectionViewScrollDirection scrollDirection;
 //是否可以缩放(默认 NO)
 @property (nonatomic, assign) BOOL isZoom;
@@ -29,6 +29,8 @@
 @property (nonatomic, assign) BOOL isClick;
 //是否禁止拖拽(默认 NO 可以拖拽)
 @property (nonatomic, assign) BOOL isDisableDrag;
+//是否弹簧效果(默认 YES)
+@property (nonatomic, assign) BOOL isBounces;
 
 //自动轮播时间间隔 (默认是0）
 // < 0 不自动 不界面循环
