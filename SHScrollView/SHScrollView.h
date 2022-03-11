@@ -11,7 +11,7 @@
 @interface SHScrollView : UIView
 
 #pragma mark - 必传
-//内容Arr (http、UIView、UIImage、UIViewController, NSString ,NSAttributedString，本地图片，资源图片)
+//内容Arr (网址、UIView、UIImage、UIViewController, NSString ,NSAttributedString，本地图片，资源图片，GIF、NSArray<UIImage>)
 @property (nonatomic, copy) NSArray *contentArr;
 
 #pragma mark - 非必传
@@ -31,6 +31,12 @@
 @property (nonatomic, assign) BOOL isDisableDrag;
 //是否弹簧效果(默认 YES)
 @property (nonatomic, assign) BOOL isBounces;
+
+//内容为 NSArray<UIImage>时 用到的属性
+//动画次数(默认 0)
+@property (nonatomic, assign) NSInteger animationRepeatCount;
+//动画时长(默认 0)
+@property (nonatomic, assign) NSTimeInterval animationDuration;
 
 //自动轮播时间间隔 (默认是0）
 // < 0 不自动 不界面循环

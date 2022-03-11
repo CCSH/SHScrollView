@@ -8,6 +8,8 @@
 
 #import "SHScrollView.h"
 #import "UIImageView+WebCache.h"
+#import "NSData+ImageContentType.h"
+#import "UIImage+GIF.h"
 
 @interface SHScrollView () <UICollectionViewDataSource, UICollectionViewDelegate>
 
@@ -88,21 +90,35 @@ static NSString *cellId = @"SHScrollView";
     if ([obj isKindOfClass:[NSString class]]) {
         //字符串
         NSString *str = (NSString *)obj;
-        //资源图片
-        UIImage *image = [UIImage imageNamed:str];
-        if (!image) {
-            //本地图片
-            image = [UIImage imageWithContentsOfFile:str];
-        }
-        if (image) {
-            //图片
-            [self configView:baseView obj:image];
-            return;
-        }
         
         if ([str hasPrefix:@"http"]) {
             //网络图片
             [self configView:baseView obj:[NSURL URLWithString:str]];
+            return;
+        }
+        
+        UIImage *image;
+        NSData *data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:str ofType:nil]];
+        if (!data) {
+            data = [NSData dataWithContentsOfFile:str];
+        }
+        if ([NSData sd_imageFormatForImageData:data] == SDImageFormatGIF) {
+            //GIF图片
+            image = [UIImage sd_imageWithGIFData:data];
+        }
+        
+        if (!image) {
+            //资源图片
+            image = [UIImage imageNamed:str];
+        }
+        if (!image) {
+            //本地图片
+            image = [UIImage imageWithContentsOfFile:str];
+        }
+
+        if (image) {
+            //图片
+            [self configView:baseView obj:image];
             return;
         }
         
@@ -117,8 +133,6 @@ static NSString *cellId = @"SHScrollView";
     } else if ([obj isKindOfClass:[NSURL class]]){
         //网络图片
         [imageView sd_setImageWithURL:obj placeholderImage:self.placeholderImage];
-        [baseView addSubview:imageView];
-        return;
     } else if ([obj isKindOfClass:[NSAttributedString class]]) {
         //富文本
         UILabel *lab = [self getLabView];
@@ -129,8 +143,6 @@ static NSString *cellId = @"SHScrollView";
     } else if ([obj isKindOfClass:[UIImage class]]) {
         //图片
         imageView.image = (UIImage *)obj;
-        [baseView addSubview:imageView];
-        return;
     } else if ([obj isKindOfClass:[UIViewController class]]) {
         //控制器
         UIViewController *vc = (UIViewController *)obj;
@@ -142,6 +154,14 @@ static NSString *cellId = @"SHScrollView";
         UIView *view = obj;
         [baseView addSubview:view];
         return;
+    }else if ([obj isKindOfClass:[NSArray class]]){
+        //图片集合
+        NSArray *arr = (NSArray *)obj;
+        imageView.animationImages = arr;
+        imageView.image = arr.lastObject;
+        imageView.animationDuration = self.animationDuration;
+        imageView.animationRepeatCount = self.animationRepeatCount;
+        [imageView startAnimating];
     }
     //默认
     [baseView addSubview:imageView];
