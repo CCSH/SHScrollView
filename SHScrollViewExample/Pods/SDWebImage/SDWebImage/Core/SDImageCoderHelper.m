@@ -57,12 +57,12 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
         durations[i] = frames[i].duration * 1000;
     }
     NSUInteger const gcd = gcdArray(frameCount, durations);
-    __block NSUInteger totalDuration = 0;
+    __block NSTimeInterval totalDuration = 0;
     NSMutableArray<UIImage *> *animatedImages = [NSMutableArray arrayWithCapacity:frameCount];
     [frames enumerateObjectsUsingBlock:^(SDImageFrame * _Nonnull frame, NSUInteger idx, BOOL * _Nonnull stop) {
         UIImage *image = frame.image;
         NSUInteger duration = frame.duration * 1000;
-        totalDuration += duration;
+        totalDuration += frame.duration;
         NSUInteger repeatCount;
         if (gcd) {
             repeatCount = duration / gcd;
@@ -74,7 +74,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
         }
     }];
     
-    animatedImage = [UIImage animatedImageWithImages:animatedImages duration:totalDuration / 1000.f];
+    animatedImage = [UIImage animatedImageWithImages:animatedImages duration:totalDuration];
     
 #else
     
@@ -135,7 +135,6 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
         avgDuration = 0.1; // if it's a animated image but no duration, set it to default 100ms (this do not have that 10ms limit like GIF or WebP to allow custom coder provide the limit)
     }
     
-    __block NSUInteger index = 0;
     __block NSUInteger repeatCount = 1;
     __block UIImage *previousImage = animatedImages.firstObject;
     [animatedImages enumerateObjectsUsingBlock:^(UIImage * _Nonnull image, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -149,15 +148,12 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
             SDImageFrame *frame = [SDImageFrame frameWithImage:previousImage duration:avgDuration * repeatCount];
             [frames addObject:frame];
             repeatCount = 1;
-            index++;
         }
         previousImage = image;
-        // last one
-        if (idx == frameCount - 1) {
-            SDImageFrame *frame = [SDImageFrame frameWithImage:previousImage duration:avgDuration * repeatCount];
-            [frames addObject:frame];
-        }
     }];
+    // last one
+    SDImageFrame *frame = [SDImageFrame frameWithImage:previousImage duration:avgDuration * repeatCount];
+    [frames addObject:frame];
     
 #else
     
@@ -259,9 +255,19 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     // iOS prefer BGRA8888 (premultiplied) or BGRX8888 bitmapInfo for screen rendering, which is same as `UIGraphicsBeginImageContext()` or `- [CALayer drawInContext:]`
     // Though you can use any supported bitmapInfo (see: https://developer.apple.com/library/content/documentation/GraphicsImaging/Conceptual/drawingwithquartz2d/dq_context/dq_context.html#//apple_ref/doc/uid/TP30001066-CH203-BCIBHHBB ) and let Core Graphics reorder it when you call `CGContextDrawImage`
     // But since our build-in coders use this bitmapInfo, this can have a little performance benefit
-    CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
-    bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
-    CGContextRef context = CGBitmapContextCreate(NULL, newWidth, newHeight, 8, 0, [self colorSpaceGetDeviceRGB], bitmapInfo);
+    CGBitmapInfo bitmapInfo;
+    CGContextRef context = NULL;
+    if (@available(iOS 15, tvOS 15, macOS 12, watchOS 8, *)) {
+        // Update for iOS 15: CoreGraphics's draw image will fail to transcode and draw some special CGImage on BGRX8888
+        // We prefer to use the input CGImage's bitmap firstly, then fallback to BGRAX8888. See #3330
+        bitmapInfo = CGImageGetBitmapInfo(cgImage);
+        context = CGBitmapContextCreate(NULL, newWidth, newHeight, 8, 0, [self colorSpaceGetDeviceRGB], bitmapInfo);
+    }
+    if (!context) {
+        bitmapInfo = kCGBitmapByteOrder32Host;
+        bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
+        context = CGBitmapContextCreate(NULL, newWidth, newHeight, 8, 0, [self colorSpaceGetDeviceRGB], bitmapInfo);
+    }
     if (!context) {
         return NULL;
     }
@@ -362,7 +368,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     }
     destTotalPixels = bytes / kBytesPerPixel;
     tileTotalPixels = destTotalPixels / 3;
-    CGContextRef destContext;
+    CGContextRef destContext = NULL;
     
     // autorelease the bitmap context and all vars to help system to free memory when there are memory warning.
     // on iOS7, do not forget to call [[SDImageCache sharedImageCache] clearMemory];
@@ -384,20 +390,35 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
         // device color space
         CGColorSpaceRef colorspaceRef = [self colorSpaceGetDeviceRGB];
         BOOL hasAlpha = [self CGImageContainsAlpha:sourceImageRef];
-        // iOS display alpha info (BGRA8888/BGRX8888)
-        CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
-        bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
         
         // kCGImageAlphaNone is not supported in CGBitmapContextCreate.
         // Since the original image here has no alpha info, use kCGImageAlphaNoneSkipFirst
         // to create bitmap graphics contexts without alpha info.
-        destContext = CGBitmapContextCreate(NULL,
-                                            destResolution.width,
-                                            destResolution.height,
-                                            kBitsPerComponent,
-                                            0,
-                                            colorspaceRef,
-                                            bitmapInfo);
+        CGBitmapInfo bitmapInfo;
+        if (@available(iOS 15, tvOS 15, macOS 12, watchOS 8, *)) {
+            // Update for iOS 15: CoreGraphics's draw image will fail to transcode some special CGImage on BGRX8888
+            // We prefer to use the input CGImage's bitmap firstly, then fallback to BGRAX8888. See #3330
+            bitmapInfo = CGImageGetBitmapInfo(sourceImageRef);
+            destContext = CGBitmapContextCreate(NULL,
+                                                destResolution.width,
+                                                destResolution.height,
+                                                kBitsPerComponent,
+                                                0,
+                                                colorspaceRef,
+                                                bitmapInfo);
+        }
+        if (!destContext) {
+            // iOS display alpha info (BGRA8888/BGRX8888)
+            bitmapInfo = kCGBitmapByteOrder32Host;
+            bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
+            destContext = CGBitmapContextCreate(NULL,
+                                                destResolution.width,
+                                                destResolution.height,
+                                                kBitsPerComponent,
+                                                0,
+                                                colorspaceRef,
+                                                bitmapInfo);
+        }
         
         if (destContext == NULL) {
             return image;
@@ -452,7 +473,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
                     float dify = destTile.size.height;
                     destTile.size.height = CGImageGetHeight( sourceTileImageRef ) * imageScale;
                     dify -= destTile.size.height;
-                    destTile.origin.y += dify;
+                    destTile.origin.y = MIN(0, destTile.origin.y + dify);
                 }
                 CGContextDrawImage( destContext, destTile, sourceTileImageRef );
                 CGImageRelease( sourceTileImageRef );
