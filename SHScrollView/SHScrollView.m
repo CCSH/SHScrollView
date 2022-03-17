@@ -7,8 +7,8 @@
 //
 
 #import "SHScrollView.h"
+#import "UIImage+GIF.h"
 #import "UIImageView+WebCache.h"
-#import "SDImageGIFCoder.h"
 
 @interface SHScrollView () <UICollectionViewDataSource, UICollectionViewDelegate>
 
@@ -103,7 +103,7 @@ static NSString *cellId = @"SHScrollView";
         UIImage *image;
         if (data) {
             //GIF图片
-            image = [[SDImageGIFCoder sharedCoder] decodedImageWithData:data options:0];
+            image = [UIImage sd_imageWithGIFData:data];
         }
         if (!image) {
             //资源图片
