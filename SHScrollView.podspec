@@ -9,5 +9,5 @@ Pod::Spec.new do |s|
     s.homepage     = "https://github.com/CCSH/SHScrollView"
     s.source       = { :git => "https://github.com/CCSH/SHScrollView.git", :tag => s.version }
     s.source_files = "SHScrollView/*.{h,m}"
-    s.dependency     "SDWebImage"
+    s.dependency     "SDWebImage", "~>5.12.5"
 end
