@@ -14,7 +14,7 @@
 		5C3AA64321428CB2003B0744 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C3AA64221428CB2003B0744 /* Assets.xcassets */; };
 		5C3AA64621428CB2003B0744 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5C3AA64421428CB2003B0744 /* LaunchScreen.storyboard */; };
 		5C3AA64921428CB2003B0744 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C3AA64821428CB2003B0744 /* main.m */; };
-		5CC8E63D27D9ED3B0030CF2E /* 1.gif in Resources */ = {isa = PBXBuildFile; fileRef = 5CC8E63C27D9ED3B0030CF2E /* 1.gif */; };
+		5CA0076227E2E4F8006E6450 /* 1.gif in Resources */ = {isa = PBXBuildFile; fileRef = 5CA0076127E2E4F8006E6450 /* 1.gif */; };
 		83FF4C6525ECB3BC00E9D568 /* SHScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FF4C6325ECB3BC00E9D568 /* SHScrollView.m */; };
 /* End PBXBuildFile section */
 
@@ -49,7 +49,7 @@
 		5C3AA64821428CB2003B0744 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		5C3AA64E21428CB2003B0744 /* SHScrollViewExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SHScrollViewExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C3AA65921428CB2003B0744 /* SHScrollViewExampleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SHScrollViewExampleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		5CC8E63C27D9ED3B0030CF2E /* 1.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 1.gif; sourceTree = "<group>"; };
+		5CA0076127E2E4F8006E6450 /* 1.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 1.gif; sourceTree = "<group>"; };
 		83FF4C6325ECB3BC00E9D568 /* SHScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHScrollView.m; sourceTree = "<group>"; };
 		83FF4C6425ECB3BC00E9D568 /* SHScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHScrollView.h; sourceTree = "<group>"; };
 		CEE7869AF565042521E5B1CE /* Pods-SHScrollViewExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SHScrollViewExample.debug.xcconfig"; path = "Target Support Files/Pods-SHScrollViewExample/Pods-SHScrollViewExample.debug.xcconfig"; sourceTree = "<group>"; };
@@ -120,7 +120,7 @@
 				5C3AA63D21428CB0003B0744 /* ViewController.m */,
 				5C3AA63F21428CB0003B0744 /* Main.storyboard */,
 				5C3AA64221428CB2003B0744 /* Assets.xcassets */,
-				5CC8E63C27D9ED3B0030CF2E /* 1.gif */,
+				5CA0076127E2E4F8006E6450 /* 1.gif */,
 				5C3AA64421428CB2003B0744 /* LaunchScreen.storyboard */,
 				5C3AA64721428CB2003B0744 /* Info.plist */,
 				5C3AA64821428CB2003B0744 /* main.m */,
@@ -254,7 +254,7 @@
 			files = (
 				5C3AA64621428CB2003B0744 /* LaunchScreen.storyboard in Resources */,
 				5C3AA64321428CB2003B0744 /* Assets.xcassets in Resources */,
-				5CC8E63D27D9ED3B0030CF2E /* 1.gif in Resources */,
+				5CA0076227E2E4F8006E6450 /* 1.gif in Resources */,
 				5C3AA64121428CB0003B0744 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

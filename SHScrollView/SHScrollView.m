@@ -8,7 +8,6 @@
 
 #import "SHScrollView.h"
 #import "UIImageView+WebCache.h"
-#import "NSData+ImageContentType.h"
 #import "UIImage+GIF.h"
 
 @interface SHScrollView () <UICollectionViewDataSource, UICollectionViewDelegate>
@@ -97,16 +96,15 @@ static NSString *cellId = @"SHScrollView";
             return;
         }
         
-        UIImage *image;
         NSData *data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:str ofType:nil]];
         if (!data) {
             data = [NSData dataWithContentsOfFile:str];
         }
-        if ([NSData sd_imageFormatForImageData:data] == SDImageFormatGIF) {
+        UIImage *image;
+        if (data) {
             //GIF图片
             image = [UIImage sd_imageWithGIFData:data];
         }
-        
         if (!image) {
             //资源图片
             image = [UIImage imageNamed:str];
