@@ -70,7 +70,7 @@
 //滚动了一页
 @property (nonatomic, copy) void (^endRollingBlock)(BOOL isClick, NSInteger currentIndex);
 //内容返回
-@property (nonatomic, copy) UIView * (^contentView)(id obj, NSInteger currentIndex);
+@property (nonatomic, copy) UIView * (^contentView)(id obj, NSInteger index);
 
 //刷新视图
 - (void)reloadView;
