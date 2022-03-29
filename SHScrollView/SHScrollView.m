@@ -42,7 +42,7 @@ static NSString *cellId = @"SHScrollView";
 #pragma mark - 懒加载
 - (UICollectionView *)mainView {
     if (!_mainView) {
-        //UICollectionView的自动布局
+        // UICollectionView的自动布局
         UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
         //设置滑动方向
         layout.scrollDirection = self.scrollDirection;
@@ -102,8 +102,12 @@ static NSString *cellId = @"SHScrollView";
         }
         UIImage *image;
         if (data) {
-            //GIF图片
+            // GIF图片
             image = [UIImage sd_imageWithGIFData:data];
+            if ([image images].count) {
+                [self configView:baseView obj:[image images]];
+                return;
+            }
         }
         if (!image) {
             //资源图片
@@ -113,7 +117,7 @@ static NSString *cellId = @"SHScrollView";
             //本地图片
             image = [UIImage imageWithContentsOfFile:str];
         }
-
+        
         if (image) {
             //图片
             [self configView:baseView obj:image];
@@ -128,7 +132,7 @@ static NSString *cellId = @"SHScrollView";
             [baseView addSubview:lab];
             return;
         }
-    } else if ([obj isKindOfClass:[NSURL class]]){
+    } else if ([obj isKindOfClass:[NSURL class]]) {
         //网络图片
         [imageView sd_setImageWithURL:obj placeholderImage:self.placeholderImage];
     } else if ([obj isKindOfClass:[NSAttributedString class]]) {
@@ -152,7 +156,7 @@ static NSString *cellId = @"SHScrollView";
         UIView *view = obj;
         [baseView addSubview:view];
         return;
-    }else if ([obj isKindOfClass:[NSArray class]]){
+    } else if ([obj isKindOfClass:[NSArray class]]) {
         //图片集合
         NSArray *arr = (NSArray *)obj;
         imageView.animationImages = arr;
@@ -226,10 +230,10 @@ static NSString *cellId = @"SHScrollView";
     cell.contentView.layer.masksToBounds = YES;
     
     UIView *baseView = [self getBaseView];
-    if (!baseView) {
-        baseView = cell.contentView;
-    } else {
+    if (baseView) {
         [cell.contentView addSubview:baseView];
+    } else {
+        baseView = cell.contentView;
     }
     
     NSInteger index = indexPath.row;
@@ -300,12 +304,12 @@ static NSString *cellId = @"SHScrollView";
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    //item 主轴方向间距
+    // item 主轴方向间距
     return self.space;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
-    //item 辅轴方向间距
+    // item 辅轴方向间距
     return 0;
 }
 
@@ -453,7 +457,7 @@ static NSString *cellId = @"SHScrollView";
     
     //刷新内容
     [self.mainView reloadData];
-     
+    
     NSInteger index = currentIndex;
     if (self.timeInterval >= 0) {
         //界面循环
@@ -499,14 +503,14 @@ static NSString *cellId = @"SHScrollView";
 #pragma mark - 刷新视图
 - (void)reloadView {
     //数组为空
-    if (!self.contentArr.count){
+    if (!self.contentArr.count) {
         return;
     }
     
     //拖拽处理
     if (self.isDisableDrag) {
         [self disableDrag];
-    }else{
+    } else {
         if (!self.mainView.canCancelContentTouches) {
             self.mainView = nil;
         }
@@ -546,7 +550,7 @@ static NSString *cellId = @"SHScrollView";
     if (self.currentIndex < 0 || self.currentIndex >= self.contentArr.count) {
         self.currentIndex = 0;
     }
-
+    
     //处理时间
     [self dealTime];
 }

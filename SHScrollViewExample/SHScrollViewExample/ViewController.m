@@ -38,7 +38,7 @@
     
     SHScrollView *view = [[SHScrollView alloc]init];
     view.animationDuration = 2;
-    view.animationRepeatCount = 5;
+    view.animationRepeatCount = 1;
     view.frame = CGRectMake((self.view.frame.size.width - 300)/2, 100, 300, 150);
     [self.view addSubview:view];
     
