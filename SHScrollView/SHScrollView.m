@@ -351,15 +351,22 @@ static NSString *cellId = @"SHScrollView";
             index = scrollView.contentOffset.y / (scrollView.frame.size.height);
         }
         
+        //防止界面循环，拖拽不松手超过两屏
+        if (self.timeInterval >= 0) {
+            //界面循环
+            if (index > 2) {
+                index = 2;
+            }
+        }
+        
         if (index == (NSInteger)index) { //滑动了一页
-            
             NSInteger temp = self.currentIndex;
             
-            if (self.timeInterval < 0) { //界面不循环
-                
+            if (self.timeInterval < 0) {
+                //界面不循环
                 temp = (NSInteger)index;
-            } else { //界面循环
-                
+            } else {
+                //界面循环
                 switch ((NSInteger)index) {
                     case 0: //左
                     {
