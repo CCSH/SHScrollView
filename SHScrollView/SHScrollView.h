@@ -23,7 +23,7 @@
 @property (nonatomic, assign) UIViewContentMode contentMode;
 //滚动方向(默认 UICollectionViewScrollDirectionHorizontal)
 @property (nonatomic, assign) UICollectionViewScrollDirection scrollDirection;
-//是否可以缩放(默认 NO)
+//是否可以缩放(默认 NO) 有间距space、边距edgeInset无法缩放
 @property (nonatomic, assign) BOOL isZoom;
 //是否可以点击(默认 YES)
 @property (nonatomic, assign) BOOL isClick;
@@ -48,7 +48,7 @@
 //内容大小(默认与视图相同)
 @property (nonatomic, assign) CGSize itemSize;
 
-#pragma mark 下方三个属性搭配使用
+#pragma mark 下方属性搭配使用
 //间距
 @property (nonatomic, assign) CGFloat space;
 //内容边距

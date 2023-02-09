@@ -72,8 +72,10 @@ static NSString *cellId = @"SHScrollView";
 #pragma mark - 私有方法
 #pragma mark 点击视图
 - (void)tapAction {
-    if (self.endRollingBlock) {
-        self.endRollingBlock(YES, self.currentIndex);
+    if(self.isClick){
+        if (self.endRollingBlock) {
+            self.endRollingBlock(YES, self.currentIndex);
+        }
     }
 }
 
@@ -191,11 +193,9 @@ static NSString *cellId = @"SHScrollView";
         scroll.showsVerticalScrollIndicator = NO;
         scroll.showsHorizontalScrollIndicator = NO;
         
-        if (self.isClick) {
-            //添加点击
-            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction)];
-            [scroll addGestureRecognizer:tap];
-        }
+        //添加点击
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction)];
+        [scroll addGestureRecognizer:tap];
         
         return scroll;
     }
@@ -286,9 +286,7 @@ static NSString *cellId = @"SHScrollView";
     if (collectionView == self.mainView) {
         [collectionView deselectItemAtIndexPath:indexPath animated:NO];
         
-        if (!self.isFull) {
-            self.currentIndex = indexPath.row;
-        }
+        self.currentIndex = indexPath.row;
         
         [self tapAction];
     }
@@ -358,16 +356,16 @@ static NSString *cellId = @"SHScrollView";
                 index = 2;
             }
         }
-        
-        if (index == (NSInteger)index) { //滑动了一页
+        NSInteger index2 = (NSInteger)index;
+        if (index == index2) { //滑动了一页
             NSInteger temp = self.currentIndex;
             
             if (self.timeInterval < 0) {
                 //界面不循环
-                temp = (NSInteger)index;
+                temp = index2;
             } else {
                 //界面循环
-                switch ((NSInteger)index) {
+                switch (index2) {
                     case 0: //左
                     {
                         temp -= 1;
@@ -446,10 +444,12 @@ static NSString *cellId = @"SHScrollView";
 - (void)setCurrentIndex:(NSInteger)currentIndex {
     //超过数组限制，不进行处理
     if (currentIndex >= self.contentArr.count) {
+        _currentIndex = -1;
         return;
     }
     
     if (!self.isFull) {
+        _currentIndex = currentIndex;
         return;
     }
     
@@ -529,11 +529,8 @@ static NSString *cellId = @"SHScrollView";
         self.isFull = YES;
     }
     
-    if (self.space) {
-        self.isFull = NO;
-    }
-    
-    if (self.edgeInset.top || self.edgeInset.left || self.edgeInset.bottom || self.edgeInset.right) {
+    //有间距space、边距edgeInset无法缩放
+    if (self.edgeInset.top || self.edgeInset.left || self.edgeInset.bottom || self.edgeInset.right || self.space) {
         self.isFull = NO;
     }
     
