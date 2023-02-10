@@ -16,8 +16,11 @@
 @property (nonatomic, weak) NSTimer *timer;
 //内容视图
 @property (nonatomic, weak) UICollectionView *mainView;
+//空内容点击
+@property (nonatomic, strong) UITapGestureRecognizer *tap;
 
 @property (nonatomic, assign) BOOL isFull;
+
 
 @end
 
@@ -67,6 +70,14 @@ static NSString *cellId = @"SHScrollView";
     }
     
     return _mainView;
+}
+
+- (UITapGestureRecognizer *)tap{
+    if(!_tap){
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction)];
+        _tap = tap;
+    }
+    return _tap;
 }
 
 #pragma mark - 私有方法
@@ -509,10 +520,15 @@ static NSString *cellId = @"SHScrollView";
 
 #pragma mark - 刷新视图
 - (void)reloadView {
+    //添加点击手势
+    [self.mainView addGestureRecognizer:self.tap];
     //数组为空
     if (!self.contentArr.count) {
+        self.currentIndex = -1;
         return;
     }
+    //移除点击手势
+    [self.mainView removeGestureRecognizer:self.tap];
     
     //拖拽处理
     if (self.isDisableDrag) {

@@ -45,7 +45,7 @@
     [self.view addSubview:view];
     
     //设置数据源
-    view.contentArr = contentArr;
+    view.contentArr = @[];
 //    view.timeInterval = 5;
     //内容
     view.contentView = ^UIView *(id obj, NSInteger currentIndex) {
