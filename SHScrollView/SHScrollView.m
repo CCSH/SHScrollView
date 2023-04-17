@@ -296,9 +296,6 @@ static NSString *cellId = @"SHScrollView";
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (collectionView == self.mainView) {
         [collectionView deselectItemAtIndexPath:indexPath animated:NO];
-        
-        self.currentIndex = indexPath.row;
-        
         [self tapAction];
     }
 }
